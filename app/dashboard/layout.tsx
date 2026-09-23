@@ -1,5 +1,1 @@
-import Sidebar from "@/components/Sidebar";
-
-export default function DashboardLayout({children}:{children:React.ReactNode}) {
-  return <div className="dashShell"><Sidebar/><main className="dashMain">{children}</main></div>;
-}
+import {redirect} from "next/navigation";import Sidebar from "@/components/Sidebar";import {createClient} from "@/lib/supabase/server";export const dynamic="force-dynamic";export default async function DashboardLayout({children}:{children:React.ReactNode}){const supabase=await createClient();const{data:{user}}=await supabase.auth.getUser();if(!user)redirect("/connexion");const{data:membership}=await supabase.from("store_members").select("store_id,role").eq("user_id",user.id).limit(1).maybeSingle();if(!membership)redirect("/connexion?access=missing");return <div className="dashShell"><Sidebar/><main className="dashMain">{children}</main></div>}
