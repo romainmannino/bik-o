@@ -1,10 +1,55 @@
 "use client";
-import {useMemo,useState} from "react";
+
+import { useMemo, useState } from "react";
 import Link from "next/link";
-export default function PublicCatalogueFilters({bikes,storeSlug}:{bikes:any[],storeSlug:string}){
- const[q,setQ]=useState(""); const[brand,setBrand]=useState(""); const[year,setYear]=useState(""); const[cat,setCat]=useState(""); const[max,setMax]=useState(""); const[open,setOpen]=useState<string|null>(null);
- const brands=Array.from(new Set(bikes.map(b=>b.brand).filter(Boolean))); const years=Array.from(new Set(bikes.map(b=>String(b.year)).filter(Boolean))); const cats=Array.from(new Set(bikes.map(b=>b.category).filter(Boolean)));
- const list=useMemo(()=>bikes.filter(b=>(!q||(b.brand+" "+b.name).toLowerCase().includes(q.toLowerCase()))&&(!brand||b.brand===brand)&&(!year||String(b.year)===year)&&(!cat||b.category===cat)&&(!max||!b.price||b.price<=Number(max)*100)),[bikes,q,brand,year,cat,max]);
- const euro=(c:number)=>c?new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(c/100):"Prix sur demande";
- return <section className="publicCatalogBody"><div className="publicFilters"><input placeholder="Rechercher un modèle…" value={q} onChange={e=>setQ(e.target.value)}/><select value={brand} onChange={e=>setBrand(e.target.value)}><option value="">Marque</option>{brands.map(x=><option key={String(x)}>{String(x)}</option>)}</select><select value={year} onChange={e=>setYear(e.target.value)}><option value="">Année de gamme</option>{years.map(x=><option key={String(x)}>{String(x)}</option>)}</select><select value={cat} onChange={e=>setCat(e.target.value)}><option value="">Pratique</option>{cats.map(x=><option key={String(x)}>{String(x)}</option>)}</select><input type="number" placeholder="Prix max €" value={max} onChange={e=>setMax(e.target.value)}/></div><p className="catalogCount">{list.length} modèle{list.length>1?"s":""}</p><div className="publicBikeGrid">{list.map(b=><article className="publicBikeCard" key={b.id}><Link className="bikeCardLink" href={"/magasin/"+storeSlug+"/velos/"+b.slug}><div className="publicBikeImage">{b.image?<img src={b.image} alt={b.name}/>:<span>PHOTO EPOS</span>}</div><small>{b.brand} · {b.year}</small><h2>{b.name}</h2><p>{b.category}</p><strong>{euro(b.price)}</strong></Link>{b.statusKey==="in_stock"?<><button type="button" className="stockBadge in_stock stockToggle" onClick={()=>setOpen(open===b.id?null:b.id)}>Disponible en magasin ▾</button>{open===b.id&&<div className="stockPopover"><b>Tailles et couleurs disponibles</b>{b.availableVariants.map((v:any,i:number)=><span key={i}><strong>{v.size||"—"}</strong> · {v.color||"—"} {v.qty>1?"("+v.qty+")":""}</span>)}</div></>:<em className={"stockBadge "+b.statusKey}>{b.status}</em>}</article>)}</div></section>;
+
+type Bike = {
+  id: string; slug: string; brand?: string; year?: string | number; category?: string;
+  name: string; price?: number; image?: string | null; statusKey?: string; status?: string;
+  availableVariants?: Array<{ size?: string; color?: string; qty?: number }>;
+};
+
+export default function PublicCatalogueFilters({ bikes, storeSlug }: { bikes: Bike[]; storeSlug: string }) {
+  const [q,setQ]=useState(""); const [brand,setBrand]=useState(""); const [year,setYear]=useState("");
+  const [cat,setCat]=useState(""); const [max,setMax]=useState(""); const [open,setOpen]=useState<string|null>(null);
+  const brands=Array.from(new Set(bikes.map(b=>b.brand).filter(Boolean))) as string[];
+  const years=Array.from(new Set(bikes.map(b=>b.year).filter(Boolean).map(String)));
+  const cats=Array.from(new Set(bikes.map(b=>b.category).filter(Boolean))) as string[];
+  const list=useMemo(()=>bikes.filter(b=>{
+    const search=!q||((b.brand||"")+" "+b.name).toLowerCase().includes(q.toLowerCase());
+    return search&&(!brand||b.brand===brand)&&(!year||String(b.year)===year)&&(!cat||b.category===cat)&&(!max||!b.price||b.price<=Number(max)*100);
+  }),[bikes,q,brand,year,cat,max]);
+  const euro=(c?:number)=>c?new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(c/100):"Prix sur demande";
+
+  return (
+    <section className="publicCatalogBody">
+      <div className="publicFilters">
+        <input placeholder="Rechercher un modèle…" value={q} onChange={e=>setQ(e.target.value)} />
+        <select value={brand} onChange={e=>setBrand(e.target.value)}><option value="">Marque</option>{brands.map(v=><option key={v} value={v}>{v}</option>)}</select>
+        <select value={year} onChange={e=>setYear(e.target.value)}><option value="">Année de gamme</option>{years.map(v=><option key={v} value={v}>{v}</option>)}</select>
+        <select value={cat} onChange={e=>setCat(e.target.value)}><option value="">Pratique</option>{cats.map(v=><option key={v} value={v}>{v}</option>)}</select>
+        <input type="number" placeholder="Prix max €" value={max} onChange={e=>setMax(e.target.value)} />
+      </div>
+      <p className="catalogCount">{list.length} modèle{list.length>1?"s":""}</p>
+      <div className="publicBikeGrid">
+        {list.map(bike=>{
+          const isOpen=open===bike.id; const variants=bike.availableVariants||[];
+          return (
+            <article className="publicBikeCard" key={bike.id}>
+              <Link className="bikeCardLink" href={`/magasin/${storeSlug}/velos/${bike.slug}`}>
+                <div className="publicBikeImage">{bike.image?<img src={bike.image} alt={bike.name}/>:<span>PHOTO EPOS</span>}</div>
+                <small>{bike.brand} · {bike.year}</small><h2>{bike.name}</h2><p>{bike.category}</p><strong>{euro(bike.price)}</strong>
+              </Link>
+              {bike.statusKey==="in_stock" ? (
+                <div className="stockControl">
+                  <button type="button" className="stockBadge in_stock stockToggle" onClick={()=>setOpen(isOpen?null:bike.id)}>Disponible en magasin ▾</button>
+                  {isOpen ? <div className="stockPopover"><b>Tailles et couleurs disponibles</b>{variants.map((v,i)=><span key={i}><strong>{v.size||"—"}</strong>{" · "}{v.color||"—"}{v.qty&&v.qty>1?` (${v.qty})`:""}</span>)}</div> : null}
+                </div>
+              ) : <em className={`stockBadge ${bike.statusKey||""}`}>{bike.status}</em>}
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
 }
