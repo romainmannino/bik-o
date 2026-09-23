@@ -24,11 +24,11 @@ export default function PublicCatalogueFilters({ bikes, storeSlug }: { bikes: Bi
   return (
     <section className="publicCatalogBody">
       <div className="catalogLayout">
-        <aside className="publicFilters">
+        <aside className="publicFilters"><div className="filterHead"><strong>FILTRER</strong><small>{list.length} résultat{list.length>1?"s":""}</small></div>
           <label><span>Rechercher</span><input placeholder="Nom du modèle…" value={q} onChange={e=>setQ(e.target.value)} /></label>
-          <label><span>Marque</span><select value={brand} onChange={e=>setBrand(e.target.value)}><option value="">Toutes les marques</option>{brands.map(v=><option key={v} value={v}>{v}</option>)}</select></label>
-          <label><span>Année de gamme</span><select value={year} onChange={e=>setYear(e.target.value)}><option value="">Toutes les années</option>{years.map(v=><option key={v} value={v}>{v}</option>)}</select></label>
-          <label><span>Pratique</span><select value={cat} onChange={e=>setCat(e.target.value)}><option value="">Toutes les pratiques</option>{cats.map(v=><option key={v} value={v}>{v}</option>)}</select></label>
+          <fieldset><legend>Marque</legend>{brands.map(v=><label className="filterCheck" key={v}><input type="checkbox" checked={brand===v} onChange={()=>setBrand(brand===v?"":v)}/><span>{v}</span></label>)}</fieldset>
+          <fieldset><legend>Année de gamme</legend>{years.map(v=><label className="filterCheck" key={v}><input type="checkbox" checked={year===v} onChange={()=>setYear(year===v?"":v)}/><span>{v}</span></label>)}</fieldset>
+          <fieldset><legend>Pratique</legend>{cats.map(v=><label className="filterCheck" key={v}><input type="checkbox" checked={cat===v} onChange={()=>setCat(cat===v?"":v)}/><span>{v}</span></label>)}</fieldset>
           <label><span>Budget maximum</span><input type="number" placeholder="Prix max €" value={max} onChange={e=>setMax(e.target.value)} /></label>
           {(q||brand||year||cat||max)&&<button type="button" className="clearFilters" onClick={()=>{setQ("");setBrand("");setYear("");setCat("");setMax("")}}>Effacer les filtres</button>}
         </aside>
