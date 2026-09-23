@@ -1,1 +1,40 @@
-"use client";import {useState,type FormEvent} from "react";import {useRouter} from "next/navigation";import {createClient} from "../lib/supabase/client";export default function LoginForm(){const router=useRouter();const[state,setState]=useState<"idle"|"busy"|"confirm"|"error">("idle");const[msg,setMsg]=useState("");async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();setState("busy");const f=new FormData(e.currentTarget);const email=String(f.get("email")||"").trim();const password=String(f.get("password")||"");const invite=String(f.get("invite")||"").trim();const supabase=createClient();let {data,error}=await supabase.auth.signInWithPassword({email,password});if(error){const signup=await supabase.auth.signUp({email,password});if(signup.error){setMsg("Connexion impossible. Vérifie l'email et le mot de passe.");setState("error");return}if(!signup.data.session){setMsg("Compte créé. Confirme l'email reçu puis reviens te connecter avec le même code d'invitation.");setState("confirm");return}data=signup.data}if(!data.session){setMsg("Session introuvable.");setState("error");return}const claim=await supabase.rpc("claim_store_invite",{p_token:invite});if(claim.error&&!claim.error.message.toLowerCase().includes("invalid or expired")){setMsg("Connecté, mais l'accès magasin n'a pas pu être activé.");setState("error");return}router.replace("/dashboard");router.refresh()}return <form className="loginCard" onSubmit={submit}><div className="advisorLogo">bik<span>é</span>o</div><small>ESPACE MAGASIN</small><h1>Connexion</h1><p>Accès réservé à l'équipe du magasin.</p><label>Email<input required name="email" type="email" autoComplete="email"/></label><label>Mot de passe<input required name="password" type="password" minLength={8}/></label><label>Code d'invitation<input required name="invite" autoComplete="off"/></label><button className="primaryBtn" disabled={state==="busy"}>{state==="busy"?"Connexion...":"Se connecter"}</button>{state!=="idle"&&state!=="busy"&&<p className={state==="error"?"formError":""}>{msg}</p>}</form>}
+"use client";
+import {useState,type FormEvent} from "react";
+import {useRouter} from "next/navigation";
+import {createClient} from "../lib/supabase/client";
+
+export default function LoginForm(){
+ const router=useRouter();
+ const[mode,setMode]=useState<"login"|"signup">("signup");
+ const[busy,setBusy]=useState(false);
+ const[msg,setMsg]=useState("");
+ async function submit(e:FormEvent<HTMLFormElement>){
+  e.preventDefault();setBusy(true);setMsg("");
+  const f=new FormData(e.currentTarget),email=String(f.get("email")||"").trim(),password=String(f.get("password")||""),invite=String(f.get("invite")||"").trim();
+  const supabase=createClient();
+  if(mode==="signup"){
+   const {data,error}=await supabase.auth.signUp({email,password});
+   if(error){setMsg("Création impossible : "+error.message);setBusy(false);return}
+   if(!data.session){setMsg("Compte créé mais Supabase demande encore une confirmation email. Le réglage Email doit être vérifié.");setBusy(false);return}
+  }else{
+   const {error}=await supabase.auth.signInWithPassword({email,password});
+   if(error){setMsg("Connexion impossible : "+error.message);setBusy(false);return}
+  }
+  const {error:claimError}=await supabase.rpc("claim_store_invite",{p_token:invite});
+  if(claimError && !claimError.message.toLowerCase().includes("invalid or expired")){
+   setMsg("Compte connecté, mais rattachement magasin impossible : "+claimError.message);setBusy(false);return
+  }
+  router.replace("/dashboard");router.refresh();
+ }
+ return <form className="loginCard" onSubmit={submit}>
+  <div className="advisorLogo">bik<span>é</span>o</div><small>ESPACE MAGASIN</small>
+  <h1>{mode==="signup"?"Créer mon compte":"Connexion"}</h1>
+  <p>{mode==="signup"?"Première connexion à ton magasin Bikéo.":"Accède à ton espace magasin."}</p>
+  <label>Email<input required name="email" type="email" autoComplete="email"/></label>
+  <label>Mot de passe<input required name="password" type="password" minLength={6} autoComplete={mode==="signup"?"new-password":"current-password"}/></label>
+  <label>Code d'invitation<input required name="invite" autoComplete="off"/></label>
+  <button className="primaryBtn" disabled={busy}>{busy?"Patiente...":mode==="signup"?"Créer mon compte magasin":"Se connecter"}</button>
+  {msg&&<p className="formError">{msg}</p>}
+  <button type="button" className="authSwitch" onClick={()=>{setMode(mode==="signup"?"login":"signup");setMsg("")}}>{mode==="signup"?"J'ai déjà un compte → Se connecter":"Première connexion → Créer mon compte"}</button>
+ </form>
+}
