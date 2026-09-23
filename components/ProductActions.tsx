@@ -1,0 +1,1 @@
+"use client";export default function ProductActions(){return <div className="productActions"><button type="button" onClick={()=>window.print()}>Télécharger / imprimer la fiche</button></div>}

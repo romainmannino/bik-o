@@ -6,19 +6,19 @@ import Link from "next/link";
 type Bike = {
   id: string; slug: string; brand?: string; year?: string | number; category?: string;
   name: string; price?: number; image?: string | null; statusKey?: string; status?: string;
-  availableVariants?: Array<{ size?: string; color?: string; qty?: number }>;
+  availableVariants?: Array<{ size?: string; color?: string; qty?: number }>; electric?: boolean;
 };
 
 export default function PublicCatalogueFilters({ bikes, storeSlug }: { bikes: Bike[]; storeSlug: string }) {
   const [q,setQ]=useState(""); const [brand,setBrand]=useState(""); const [year,setYear]=useState("");
-  const [cat,setCat]=useState(""); const [max,setMax]=useState(""); const [open,setOpen]=useState<string|null>(null);
+  const [cat,setCat]=useState(""); const [max,setMax]=useState(""); const [electric,setElectric]=useState(""); const [open,setOpen]=useState<string|null>(null);
   const brands=Array.from(new Set(bikes.map(b=>b.brand).filter(Boolean))) as string[];
   const years=Array.from(new Set(bikes.map(b=>b.year).filter(Boolean).map(String)));
   const cats=Array.from(new Set(bikes.map(b=>b.category).filter(Boolean))) as string[];
   const list=useMemo(()=>bikes.filter(b=>{
     const search=!q||((b.brand||"")+" "+b.name).toLowerCase().includes(q.toLowerCase());
-    return search&&(!brand||b.brand===brand)&&(!year||String(b.year)===year)&&(!cat||b.category===cat)&&(!max||!b.price||b.price<=Number(max)*100);
-  }),[bikes,q,brand,year,cat,max]);
+    return search&&(!brand||b.brand===brand)&&(!year||String(b.year)===year)&&(!cat||b.category===cat)&&(!max||!b.price||b.price<=Number(max)*100)&&(!electric||(electric==="yes"?b.electric:!b.electric));
+  }),[bikes,q,brand,year,cat,max,electric]);
   const euro=(c?:number)=>c?new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(c/100):"Prix sur demande";
 
   return (
@@ -29,8 +29,8 @@ export default function PublicCatalogueFilters({ bikes, storeSlug }: { bikes: Bi
           <fieldset><legend>Marque</legend>{brands.map(v=><label className="filterCheck" key={v}><input type="checkbox" checked={brand===v} onChange={()=>setBrand(brand===v?"":v)}/><span>{v}</span></label>)}</fieldset>
           <fieldset><legend>Année de gamme</legend>{years.map(v=><label className="filterCheck" key={v}><input type="checkbox" checked={year===v} onChange={()=>setYear(year===v?"":v)}/><span>{v}</span></label>)}</fieldset>
           <fieldset><legend>Pratique</legend>{cats.map(v=><label className="filterCheck" key={v}><input type="checkbox" checked={cat===v} onChange={()=>setCat(cat===v?"":v)}/><span>{v}</span></label>)}</fieldset>
-          <label><span>Budget maximum</span><input type="number" placeholder="Prix max €" value={max} onChange={e=>setMax(e.target.value)} /></label>
-          {(q||brand||year||cat||max)&&<button type="button" className="clearFilters" onClick={()=>{setQ("");setBrand("");setYear("");setCat("");setMax("")}}>Effacer les filtres</button>}
+          <fieldset><legend>Assistance</legend><label className="filterCheck"><input type="checkbox" checked={electric==="yes"} onChange={()=>setElectric(electric==="yes"?"":"yes")}/><span>Électrique</span></label><label className="filterCheck"><input type="checkbox" checked={electric==="no"} onChange={()=>setElectric(electric==="no"?"":"no")}/><span>Musculaire</span></label></fieldset><label><span>Budget maximum</span><input type="number" placeholder="Prix max €" value={max} onChange={e=>setMax(e.target.value)} /></label>
+          {(q||brand||year||cat||max||electric)&&<button type="button" className="clearFilters" onClick={()=>{setQ("");setBrand("");setYear("");setCat("");setMax("");setElectric("")}}>Effacer les filtres</button>}
         </aside>
         <div className="catalogResults">
           <p className="catalogCount">{list.length} modèle{list.length>1?"s":""}</p>
