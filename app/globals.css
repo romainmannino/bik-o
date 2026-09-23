@@ -40,3 +40,6 @@
 
 /* Store presentation tuning v8 */
 .footerPresentation{max-width:560px!important}.footerPresentation p{font-size:17px!important;line-height:1.45!important;font-weight:400!important;letter-spacing:0!important;margin-bottom:48px!important}.editableSite .footerPresentation p{font-size:15px!important}.designRail .contactEdit{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:0}.designRail .contactEdit label{min-width:0}.designRail input[type=tel],.designRail input[type=email]{width:100%;padding:10px;border:1px solid var(--line);border-radius:7px;background:#fff}
+
+/* Optional contacts + social links v9 */
+.designRail input[type=url]{width:100%;padding:10px;border:1px solid var(--line);border-radius:7px;background:#fff}.socialLinks{margin-left:auto;display:flex;gap:9px;align-items:center}.socialLinks a{width:28px;height:28px;border:1px solid #ffffff80;border-radius:50%;display:grid;place-items:center!important;color:#fff!important;text-decoration:none!important;font-size:14px;font-weight:700;line-height:1}.socialLinks a:hover{background:#fff;color:#171a19!important}.editableSite .socialLinks a{width:24px;height:24px;font-size:12px}@media(max-width:720px){.socialLinks{margin-left:0}}
