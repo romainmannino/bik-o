@@ -23,15 +23,18 @@ export default function PublicCatalogueFilters({ bikes, storeSlug }: { bikes: Bi
 
   return (
     <section className="publicCatalogBody">
-      <div className="publicFilters">
-        <input placeholder="Rechercher un modèle…" value={q} onChange={e=>setQ(e.target.value)} />
-        <select value={brand} onChange={e=>setBrand(e.target.value)}><option value="">Marque</option>{brands.map(v=><option key={v} value={v}>{v}</option>)}</select>
-        <select value={year} onChange={e=>setYear(e.target.value)}><option value="">Année de gamme</option>{years.map(v=><option key={v} value={v}>{v}</option>)}</select>
-        <select value={cat} onChange={e=>setCat(e.target.value)}><option value="">Pratique</option>{cats.map(v=><option key={v} value={v}>{v}</option>)}</select>
-        <input type="number" placeholder="Prix max €" value={max} onChange={e=>setMax(e.target.value)} />
-      </div>
-      <p className="catalogCount">{list.length} modèle{list.length>1?"s":""}</p>
-      <div className="publicBikeGrid">
+      <div className="catalogLayout">
+        <aside className="publicFilters">
+          <label><span>Rechercher</span><input placeholder="Nom du modèle…" value={q} onChange={e=>setQ(e.target.value)} /></label>
+          <label><span>Marque</span><select value={brand} onChange={e=>setBrand(e.target.value)}><option value="">Toutes les marques</option>{brands.map(v=><option key={v} value={v}>{v}</option>)}</select></label>
+          <label><span>Année de gamme</span><select value={year} onChange={e=>setYear(e.target.value)}><option value="">Toutes les années</option>{years.map(v=><option key={v} value={v}>{v}</option>)}</select></label>
+          <label><span>Pratique</span><select value={cat} onChange={e=>setCat(e.target.value)}><option value="">Toutes les pratiques</option>{cats.map(v=><option key={v} value={v}>{v}</option>)}</select></label>
+          <label><span>Budget maximum</span><input type="number" placeholder="Prix max €" value={max} onChange={e=>setMax(e.target.value)} /></label>
+          {(q||brand||year||cat||max)&&<button type="button" className="clearFilters" onClick={()=>{setQ("");setBrand("");setYear("");setCat("");setMax("")}}>Effacer les filtres</button>}
+        </aside>
+        <div className="catalogResults">
+          <p className="catalogCount">{list.length} modèle{list.length>1?"s":""}</p>
+          <div className="publicBikeGrid">
         {list.map(bike=>{
           const isOpen=open===bike.id; const variants=bike.availableVariants||[];
           return (
@@ -49,6 +52,8 @@ export default function PublicCatalogueFilters({ bikes, storeSlug }: { bikes: Bi
             </article>
           );
         })}
+          </div>
+        </div>
       </div>
     </section>
   );
