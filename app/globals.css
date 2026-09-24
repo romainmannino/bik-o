@@ -74,3 +74,37 @@
 @media(min-width:801px){.productPublic{height:100vh;overflow:hidden}.productNav{height:76px!important}.productSheet{height:calc(100vh - 76px);padding:28px 5vw!important;overflow:hidden}.productIntro{height:100%;grid-template-columns:minmax(330px,.78fr) minmax(0,1.35fr);align-items:stretch}.productInfoPanel{display:flex;flex-direction:column;min-height:0}.productInfoPanel .productEyebrow{margin-top:4px}.productInfoPanel h1{font-size:clamp(38px,4vw,64px);margin:8px 0}.productFamily{font-size:17px;margin:4px 0}.productPrice{font-size:24px;margin-top:auto;padding-top:10px}.productGallerySmart{height:100%}.productMainVisual{height:100%;max-height:none}.productTools,.storeStock,.productPublic>.productSheet>.leadForm{display:none}}
 @media(max-width:800px){.desktopSpecs{display:none}.mobileSpecs{display:block}}
 @media print{.desktopSpecs{display:block!important;max-height:none!important;overflow:visible!important}.mobileSpecs{display:none!important}.productPublic{height:auto!important;overflow:visible!important}.productSheet{height:auto!important;overflow:visible!important}.productInfoPanel{display:block!important}.productPrice{display:block!important;margin-top:3mm!important}.desktopSpecs dl>div{padding:1mm 0!important}.desktopSpecs dt,.desktopSpecs dd{font-size:7pt!important}.desktopSizes{font-size:7pt!important}}
+
+/* Product + EPOS refinement v15 */
+.printPhone{display:none}
+@media(min-width:801px){
+ .productInfoPanel{overflow:hidden}
+ .desktopSpecs{max-height:none!important;overflow:hidden!important;margin:14px 0 8px!important}
+ .desktopSpecs h2{margin-bottom:5px!important}
+ .desktopSpecs dl{display:grid;grid-template-columns:1fr 1fr;column-gap:18px}
+ .desktopSpecs dl>div{grid-template-columns:92px 1fr!important;padding:4px 0!important}
+ .desktopSpecs dt,.desktopSpecs dd{font-size:9.5px!important;line-height:1.15!important}
+ .desktopSizes{padding:7px 0!important;font-size:11px!important}
+ .productPrice{padding-top:5px!important}
+}
+.sourceActions .dangerSource{background:#fff!important;color:#a83232!important;border:1px solid #e6bcbc!important}
+@media print{
+ @page{size:A4 portrait;margin:7mm}
+ .printPhone{display:inline!important;font-size:9pt!important;font-weight:800}
+ .productNav{margin:0!important;padding:0 0 2mm!important;height:14mm!important}
+ .productSheet{padding:3mm 0!important}
+ .productIntro{grid-template-columns:1.05fr .95fr!important;gap:5mm!important}
+ .productIntro h1{font-size:22pt!important;margin:2mm 0!important}
+ .productFamily{font-size:10pt!important;margin:1mm 0!important}
+ .productMainVisual{height:62mm!important}
+ .productGallerySmart{grid-template-columns:1fr 16mm!important}
+ .productThumbsSide button{height:15mm!important}
+ .desktopSpecs{margin:2mm 0!important}
+ .desktopSpecs h2{font-size:13pt!important;margin:0 0 1mm!important}
+ .desktopSpecs dl{display:grid!important;grid-template-columns:1fr 1fr!important;column-gap:4mm!important}
+ .desktopSpecs dl>div{grid-template-columns:25mm 1fr!important;padding:.7mm 0!important}
+ .desktopSpecs dt,.desktopSpecs dd{font-size:6.2pt!important;line-height:1.08!important}
+ .desktopSizes{padding:1.5mm 0!important;font-size:7pt!important}
+ .productPrice{font-size:14pt!important;margin-top:1mm!important}
+ .productTools{display:none!important}
+}
