@@ -1,11 +1,3 @@
-import type { Metadata } from "next";
-import "./globals.css";
-
-export const metadata: Metadata = {
-  title: "Bikéo — le digital du magasin de vélo indépendant",
-  description: "Site, catalogue, stock, conseil client, contenus et fidélité réunis pour les magasins de vélo indépendants."
-};
-
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="fr"><body>{children}</body></html>;
-}
+import type { Metadata } from "next";import "./globals.css";import {createClient} from "../lib/supabase/server";
+export async function generateMetadata():Promise<Metadata>{const s=await createClient();const{data}=await s.from("platform_settings").select("logo_square_url").eq("id",1).maybeSingle();return {title:"Bikéo — le digital du magasin de vélo indépendant",description:"Site, catalogue, stock, conseil client, contenus et fidélité réunis pour les magasins de vélo indépendants.",icons:data?.logo_square_url?{icon:data.logo_square_url,apple:data.logo_square_url}:undefined};}
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="fr"><body>{children}</body></html>}
