@@ -1,0 +1,2 @@
+import {redirect} from "next/navigation";
+export default async function LoyaltyJoin({params}:{params:Promise<{slug:string}>}){const{slug}=await params;const base=process.env.DIGIFYD_PUBLIC_URL||process.env.DIGIFYD_API_URL;if(!base)redirect("/");redirect(base.replace(/\/$/,"")+"/join/"+encodeURIComponent(slug))}
