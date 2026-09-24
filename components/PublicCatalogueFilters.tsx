@@ -5,7 +5,7 @@ import Link from "next/link";
 
 type Bike = {
   id: string; slug: string; brand?: string; year?: string | number; category?: string;
-  name: string; price?: number; image?: string | null; statusKey?: string; status?: string;
+  name: string; practice?: string; price?: number; image?: string | null; statusKey?: string; status?: string;
   availableVariants?: Array<{ size?: string; color?: string; qty?: number }>; electric?: boolean;
 };
 
@@ -14,10 +14,10 @@ export default function PublicCatalogueFilters({ bikes, storeSlug }: { bikes: Bi
   const [cat,setCat]=useState(""); const [max,setMax]=useState(""); const [electric,setElectric]=useState(""); const [open,setOpen]=useState<string|null>(null);
   const brands=Array.from(new Set(bikes.map(b=>b.brand).filter(Boolean))) as string[];
   const years=Array.from(new Set(bikes.map(b=>b.year).filter(Boolean).map(String)));
-  const cats=Array.from(new Set(bikes.map(b=>b.category).filter(Boolean))) as string[];
+  const cats=Array.from(new Set(bikes.map(b=>b.practice).filter(Boolean))) as string[];
   const list=useMemo(()=>bikes.filter(b=>{
     const search=!q||((b.brand||"")+" "+b.name).toLowerCase().includes(q.toLowerCase());
-    return search&&(!brand||b.brand===brand)&&(!year||String(b.year)===year)&&(!cat||b.category===cat)&&(!max||!b.price||b.price<=Number(max)*100)&&(!electric||(electric==="yes"?b.electric:!b.electric));
+    return search&&(!brand||b.brand===brand)&&(!year||String(b.year)===year)&&(!cat||b.practice===cat)&&(!max||!b.price||b.price<=Number(max)*100)&&(!electric||(electric==="yes"?b.electric:!b.electric));
   }),[bikes,q,brand,year,cat,max,electric]);
   const euro=(c?:number)=>c?new Intl.NumberFormat("fr-FR",{style:"currency",currency:"EUR",maximumFractionDigits:0}).format(c/100):"Prix sur demande";
 
@@ -28,7 +28,7 @@ export default function PublicCatalogueFilters({ bikes, storeSlug }: { bikes: Bi
           <label><span>Rechercher</span><input placeholder="Nom du modèle…" value={q} onChange={e=>setQ(e.target.value)} /></label>
           <fieldset><legend>Marque</legend>{brands.map(v=><label className="filterCheck" key={v}><input type="checkbox" checked={brand===v} onChange={()=>setBrand(brand===v?"":v)}/><span>{v}</span></label>)}</fieldset>
           <fieldset><legend>Année de gamme</legend>{years.map(v=><label className="filterCheck" key={v}><input type="checkbox" checked={year===v} onChange={()=>setYear(year===v?"":v)}/><span>{v}</span></label>)}</fieldset>
-          <fieldset><legend>Pratique</legend>{cats.map(v=><label className="filterCheck" key={v}><input type="checkbox" checked={cat===v} onChange={()=>setCat(cat===v?"":v)}/><span>{v}</span></label>)}</fieldset>
+          <fieldset><legend>Pratique</legend>{cats.length?cats.map(v=><label className="filterCheck" key={v}><input type="checkbox" checked={cat===v} onChange={()=>setCat(cat===v?"":v)}/><span>{v}</span></label>):<small className="filterHint">Pratiques à compléter dans les données marque</small>}</fieldset>
           <fieldset><legend>Assistance</legend><label className="filterCheck"><input type="checkbox" checked={electric==="yes"} onChange={()=>setElectric(electric==="yes"?"":"yes")}/><span>Électrique</span></label><label className="filterCheck"><input type="checkbox" checked={electric==="no"} onChange={()=>setElectric(electric==="no"?"":"no")}/><span>Musculaire</span></label></fieldset><label><span>Budget maximum</span><input type="number" placeholder="Prix max €" value={max} onChange={e=>setMax(e.target.value)} /></label>
           {(q||brand||year||cat||max||electric)&&<button type="button" className="clearFilters" onClick={()=>{setQ("");setBrand("");setYear("");setCat("");setMax("");setElectric("")}}>Effacer les filtres</button>}
         </aside>
@@ -40,7 +40,7 @@ export default function PublicCatalogueFilters({ bikes, storeSlug }: { bikes: Bi
           return (
             <article className="publicBikeCard" key={bike.id}>
               <Link className="bikeCardLink" href={`/magasin/${storeSlug}/velos/${bike.slug}`}>
-                <div className="publicBikeImage">{bike.image?<img src={bike.image} alt={bike.name}/>:<span>PHOTO EPOS</span>}</div>
+                <div className="publicBikeImage">{bike.image?<img src={bike.image} alt={bike.name} onError={e=>{e.currentTarget.style.display="none";e.currentTarget.nextElementSibling?.removeAttribute("hidden")}}/>:null}<span hidden={Boolean(bike.image)}>Photo bientôt disponible</span></div>
                 <small>{bike.brand} · {bike.year}</small><h2>{bike.name}</h2><p>{bike.category}</p><strong>{euro(bike.price)}</strong>
               </Link>
               {bike.statusKey==="in_stock" ? (
