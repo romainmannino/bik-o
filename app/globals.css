@@ -121,3 +121,6 @@
 
 /* Product sheet action label v18 */
 .productActions>button:first-child{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;line-height:1.05!important;gap:3px!important}.productActions>button:first-child span{font-weight:800!important}.productActions>button:first-child small{font-size:11px!important;font-weight:600!important;opacity:.88!important}
+
+/* Product component disclosure + hero cleanup v19 */
+.allSpecsTrigger{width:100%;border:0;border-top:1px solid #e6e8e6;background:transparent;color:var(--shop);padding:10px 2px 7px;display:flex;align-items:center;justify-content:space-between;font:inherit;font-size:11px;font-weight:800;cursor:pointer;text-align:left}.allSpecsTrigger::after{content:"+";width:21px;height:21px;border:1px solid #dfe3df;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:500}.allSpecsTrigger:hover{color:var(--accent)}
