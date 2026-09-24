@@ -151,3 +151,7 @@
  .mobileSideHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.mobileSideHead .sideLogo{margin:0}.mobileSideHead button{border:0;background:transparent;color:#fff;font-size:30px;padding:2px 7px}
  .desktopSideLogo{display:none}.dashMain{padding-top:28px!important}
 }
+
+/* Mobile Bikéo header identity */
+@media(max-width:900px){.mobileMenuButton b{color:#171a19!important}.mobileMenuButton b span{color:#28b98a!important}}
+.qrCamera{width:100%;max-height:320px;object-fit:cover;border-radius:10px;background:#111}
