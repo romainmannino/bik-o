@@ -155,3 +155,16 @@
 /* Mobile Bikéo header identity */
 @media(max-width:900px){.mobileMenuButton b{color:#171a19!important}.mobileMenuButton b span{color:#28b98a!important}}
 .qrCamera{width:100%;max-height:320px;object-fit:cover;border-radius:10px;background:#111}
+
+/* Mobile parity + reliable QR scan v26 */
+.qrScannerWrap{position:relative;border-radius:10px;overflow:hidden;background:#111}.qrScanFrame{pointer-events:none;position:absolute;inset:18% 18% 24%;border:3px solid #55d6aa;border-radius:14px}.qrScanHint{position:absolute;left:12px;right:12px;bottom:8px!important;margin:0!important;padding:8px 10px;border-radius:7px;background:#111d;color:#fff!important;text-align:center;font-size:11px!important}
+@media(max-width:900px){
+ .mobileMenuButton,.mobileMenuButton *{color:#171a19!important}.mobileMenuButton b span{color:#28b98a!important}.mobileMenuButton>span{color:#171a19!important}
+ .qrCodeMock span,.qrRowActions button,.qrStats strong{color:#171a19!important}
+ .qrRowActions button{border-color:#dce1dd!important;background:#fff!important}
+ .qrPhysicalMain{grid-template-columns:62px minmax(0,1fr) 82px!important;gap:14px!important;padding:16px 14px!important}
+ .qrRowActions{grid-column:2/4!important;display:flex!important;gap:7px!important}.qrRowActions button{padding:9px 10px!important}
+ .qrPhysicalMain .qrStats{grid-column:3!important;grid-row:1!important;text-align:right!important}
+ .qrMeta strong{font-size:15px!important}.qrMeta span{font-size:10px!important}
+ .qrPreviewPanel{grid-template-columns:100px 1fr!important;padding:16px!important;gap:15px!important}.qrPreviewImage{width:100px!important;height:100px!important}
+}
