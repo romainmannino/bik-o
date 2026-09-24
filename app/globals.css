@@ -139,3 +139,15 @@
 
 /* Downloadable physical QR assets v24 */
 .qrPhysicalItem{border-top:1px solid #edf0ed}.qrPhysicalMain{display:grid;grid-template-columns:72px 1fr auto 110px;gap:18px;align-items:center;padding:16px 20px}.qrPreviewBtn{cursor:pointer}.qrPreviewBtn small{display:block;color:#269c75;font-weight:800}.qrRowActions{display:flex;gap:6px}.qrRowActions button{border:1px solid #dce1dd;background:#fff;border-radius:7px;padding:9px 11px;font-size:11px;font-weight:800;cursor:pointer}.qrRowActions button:hover{border-color:#269c75;color:#238465}.qrPreviewPanel{display:grid;grid-template-columns:180px 1fr;gap:24px;align-items:center;padding:20px 112px 24px;border-top:1px solid #edf0ed;background:#fafcfa}.qrPreviewImage{width:180px;height:180px;background:#fff;border:1px solid #dfe4e0;border-radius:12px;padding:10px}.qrPreviewImage img{width:100%;height:100%;display:block}.qrPreviewPanel small{font-size:9px;letter-spacing:1.3px;color:#269c75;font-weight:800}.qrPreviewPanel h3{font-size:24px;margin:6px 0}.qrPreviewPanel p{max-width:480px;color:#747c78;font-size:12px;line-height:1.5}.qrPreviewPanel a{color:#268b6d;text-decoration:none;font-size:12px;font-weight:800}@media(max-width:850px){.qrPhysicalMain{grid-template-columns:60px 1fr}.qrRowActions,.qrPhysicalMain .qrStats{grid-column:2}.qrRowActions{flex-wrap:wrap}.qrPreviewPanel{grid-template-columns:120px 1fr;padding:18px}.qrPreviewImage{width:120px;height:120px}}
+
+/* Mobile merchant navigation v25 */
+.mobileMenuButton,.mobileSideHead,.sidebarBackdrop{display:none}
+@media(max-width:900px){
+ .mobileMenuButton{display:flex;position:sticky;top:0;z-index:38;width:100%;height:62px;border:0;border-bottom:1px solid #e1e5e1;background:#fff;align-items:center;gap:15px;padding:0 20px;text-align:left}
+ .mobileMenuButton>span{font-size:23px}.mobileMenuButton b{font-size:23px;letter-spacing:-1.5px}.mobileMenuButton b span{color:#28b98a}
+ .sidebar{display:flex!important;transform:translateX(-105%);transition:transform .25s ease;z-index:50;width:min(310px,86vw);box-shadow:14px 0 40px #0003}
+ .sidebar.sidebarOpen{transform:translateX(0)}
+ .sidebarBackdrop{display:block;position:fixed;inset:0;z-index:45;border:0;background:#0007}
+ .mobileSideHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}.mobileSideHead .sideLogo{margin:0}.mobileSideHead button{border:0;background:transparent;color:#fff;font-size:30px;padding:2px 7px}
+ .desktopSideLogo{display:none}.dashMain{padding-top:28px!important}
+}
