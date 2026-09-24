@@ -174,3 +174,9 @@
 .qrDashboardCard{margin:0 0 24px;background:#fff;border:1px solid #dfe4df;border-radius:12px;padding:24px 26px;display:flex;justify-content:space-between;align-items:center;gap:20px}.qrDashboardCard small{font-size:9px;letter-spacing:1.5px;color:#269c75;font-weight:800}.qrDashboardCard h2{font-size:24px;margin:6px 0}.qrDashboardCard p{margin:0;color:#707873;font-size:13px}.qrDashboardCard a{background:#171a19;color:#fff;text-decoration:none;border-radius:8px;padding:13px 16px;font-size:12px;font-weight:800;white-space:nowrap}@media(max-width:700px){.qrDashboardCard{align-items:flex-start;flex-direction:column}.qrDashboardCard a{width:100%;text-align:center}}
 
 .stockYear{display:block;margin-top:3px;color:#7a817d;font-size:10px;font-weight:600}
+
+/* iPhone QR scanner: full camera surface, no shaded qrbox / Safari blue button v28 */
+.qrNumberLine button{color:#171a19!important;-webkit-text-fill-color:#171a19!important;-webkit-appearance:none;appearance:none}
+#bikeo-live-reader,#bikeo-live-reader__scan_region{min-height:0!important}
+#bikeo-live-reader video{display:block!important;width:100%!important;height:auto!important;max-height:68vh!important;object-fit:contain!important;background:#111;border-radius:10px}
+@media(max-width:900px){.qrNumberLine button{color:#171a19!important;-webkit-text-fill-color:#171a19!important}.qrScannerWrap{background:#111}.qrScannerWrap #bikeo-live-reader{overflow:hidden}}

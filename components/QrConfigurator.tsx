@@ -28,7 +28,7 @@ export default function QrConfigurator({qrs,bikes}:{qrs:any[];bikes:any[]}){
     if(!match){setScanHint("QR détecté mais non reconnu par Bikéo.");return}
     handledRef.current=true;setScanHint("QR reconnu…");try{if(scanner.isScanning)await scanner.stop()}catch{}scannerRef.current=null;setQr(match.qr_number);setScanning(false);setScanHint("");
    };
-   const config={fps:10,qrbox:{width:250,height:250},aspectRatio:1};
+   const config={fps:15,disableFlip:true};
    try{await scanner.start({facingMode:"environment"},config,onDecoded,()=>{})}
    catch(firstError){console.warn("BIKEO_CAMERA_ENVIRONMENT",firstError);const cameras=await Html5Qrcode.getCameras();if(!cameras?.length)throw firstError;const rear=cameras.find((c:any)=>/back|rear|environment|arrière|dos/i.test(c.label))||cameras[cameras.length-1];await scanner.start(rear.id,config,onDecoded,()=>{})}
    setScanHint("Place le QR dans le cadre. La détection est automatique.");
