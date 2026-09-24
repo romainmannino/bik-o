@@ -236,3 +236,12 @@
  .qrIntroWrap .qrIntro span{font-size:9px!important;line-height:1.25!important}
  .qrPhysicalMain{padding:14px 12px!important}
 }
+
+/* Dashboard cleanup + PLV desktop proportions v35 */
+.dashboardSingleAction{grid-template-columns:1fr!important}
+.dashboardSingleAction .darkPanel{max-width:none!important}
+@media(min-width:701px){
+ .qrIntroWrap{grid-template-columns:105px minmax(0,1fr)!important;gap:16px!important;align-items:center!important}
+ .qrIntroWrap .merchantRealPlv{width:105px!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;align-self:center!important}
+ .qrIntroWrap .merchantRealPlvBase{width:105px!important;height:auto!important;max-height:none!important;object-fit:contain!important}
+}
