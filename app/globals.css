@@ -108,3 +108,8 @@
  .productPrice{font-size:14pt!important;margin-top:1mm!important}
  .productTools{display:none!important}
 }
+
+/* Product retail layout v16 */
+.productTopPrice{display:block;font-size:25px;margin:3px 0 12px}.importantSpecs dl{display:block!important}.importantSpecs dl>div{grid-template-columns:105px 1fr!important}.productInfoPanel>.productActions{margin-top:auto;margin-bottom:0}.productInfoPanel>.productActions button{width:100%;padding:13px 16px}.allSpecsPopup{margin-top:9px;position:relative}.allSpecsPopup summary{cursor:pointer;font-size:12px;font-weight:800;padding:10px 0;list-style:none;border-bottom:1px solid #e6e8e6}.allSpecsPopup summary::after{content:"+";float:right;font-size:17px}.allSpecsPopup[open] summary::after{content:"−"}.allSpecsWindow{position:fixed;z-index:50;left:7vw;top:11vh;width:min(620px,86vw);max-height:78vh;overflow:auto;background:#fff;border:1px solid #dfe3df;border-radius:14px;padding:24px;box-shadow:0 25px 80px #0003}.allSpecsWindow h3{font-size:24px;margin:0 0 15px}.allSpecsWindow dl{display:block!important}.allSpecsWindow dl>div{display:grid!important;grid-template-columns:150px 1fr!important;padding:8px 0!important}.productGallerySmart{position:relative}.productThumbsSide{position:absolute!important;right:14px;top:50%;transform:translateY(-50%);z-index:3;width:82px}.productMainVisual{padding-right:0}.productMainVisual img{transform:scale(1.04)}
+@media(max-width:800px){.productTopPrice{font-size:22px}.productInfoPanel>.productActions{margin-top:12px}.allSpecsWindow{left:5vw;top:8vh;width:90vw}.productThumbsSide{position:static!important;transform:none;width:auto}}
+@media print{.productTopPrice{font-size:14pt!important}.productInfoPanel>.productActions,.allSpecsPopup{display:none!important}}
