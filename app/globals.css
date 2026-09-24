@@ -215,3 +215,24 @@
 .platformLogo{display:block;max-width:100%;object-fit:contain}.sideLogo .platformLogo{width:105px;height:36px;object-position:left center}.mobileMenuButton .platformLogo{width:92px;height:34px;object-position:left center}.adminPlatformLogo{width:92px;height:30px;display:inline-block;vertical-align:middle;object-position:left center}.adminBranding{background:#fff;border:1px solid #dfe4df;border-radius:12px;padding:24px;margin-bottom:20px}.adminBranding small{font-size:9px;letter-spacing:1.5px;color:#269c75;font-weight:800}.adminBranding h2{margin:6px 0}.adminBranding p{color:#747c78;font-size:12px}.platformLogoGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.platformLogoGrid label{border:1px solid #dfe4df;border-radius:10px;padding:15px;display:grid;gap:12px}.platformLogoGrid img{height:54px;max-width:220px;object-fit:contain;object-position:left center}.platformLogoGrid .squareLogoPreview{width:54px}.qrIntroWrap{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:16px;align-items:start;margin-bottom:20px}.merchantRealPlv{position:relative;overflow:hidden;min-height:220px;border-radius:12px;background:transparent;display:flex;justify-content:center}.merchantRealPlvBase{display:block;width:auto;max-width:100%;height:auto;max-height:300px;object-fit:contain}.merchantRealQr{position:absolute}.merchantRealQr img{width:100%;display:block}.merchantRealQr span{display:block;text-align:center;font-size:8px;font-weight:800}@media(max-width:700px){.platformLogoGrid{grid-template-columns:1fr}.qrIntroWrap{grid-template-columns:105px minmax(0,1fr);gap:10px}.merchantRealPlv{display:flex!important;min-height:0!important;width:105px;height:190px}.merchantRealPlvBase{width:105px;height:190px;object-fit:contain}.qrIntro{margin:0!important}}
 
 .publicPlatformLogo{width:125px;height:44px;object-position:left center}.loginPlatformLogo,.advisorPlatformLogo{width:125px;height:42px;margin:auto;object-fit:contain}@media(max-width:700px){.publicPlatformLogo{width:105px}}
+
+/* Compact QR rows + balanced PLV summary v30 */
+.qrPhysicalItem{min-height:0!important;padding:0!important}
+.qrPhysicalMain{min-height:0!important;padding:18px 24px!important}
+.qrPreviewPanel{padding:18px 24px!important}
+.qrList .panelTitle{padding:20px 24px!important}
+.qrIntroWrap{grid-template-columns:150px minmax(0,1fr)!important;align-items:stretch!important}
+.qrIntroWrap .merchantRealPlv{width:150px!important;min-height:0!important;height:230px!important}
+.qrIntroWrap .merchantRealPlvBase{width:150px!important;height:230px!important;object-fit:contain!important}
+.qrIntroWrap .qrIntro{margin:0!important}
+@media(max-width:700px){
+ .qrIntroWrap{display:flex!important;flex-direction:column!important;align-items:center!important;gap:14px!important;margin-bottom:18px!important}
+ .qrIntroWrap .merchantRealPlv{width:130px!important;height:235px!important;order:1!important}
+ .qrIntroWrap .merchantRealPlvBase{width:130px!important;height:235px!important}
+ .qrIntroWrap .qrIntro{order:2!important;width:100%!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important}
+ .qrIntroWrap .qrIntro>div{min-width:0!important;padding:13px 9px!important;text-align:center!important}
+ .qrIntroWrap .qrIntro small{font-size:7px!important;letter-spacing:.8px!important}
+ .qrIntroWrap .qrIntro strong{font-size:22px!important;margin:8px 0!important}
+ .qrIntroWrap .qrIntro span{font-size:9px!important;line-height:1.25!important}
+ .qrPhysicalMain{padding:14px 12px!important}
+}
