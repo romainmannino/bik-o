@@ -1,0 +1,1 @@
+import LoyaltyWorkspace from "@/components/LoyaltyWorkspace";export const dynamic="force-dynamic";export default function LoyaltyPage(){return <LoyaltyWorkspace/>}
