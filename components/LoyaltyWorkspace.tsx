@@ -1,5 +1,5 @@
 "use client";
-import {useState} from "react";
+import {useEffect,useState} from "react";
 
 const tabs=[
   ["overview","Vue d’ensemble"],["card","Ma carte"],["program","Programme fidélité"],
@@ -7,9 +7,9 @@ const tabs=[
 ] as const;
 
 export default function LoyaltyWorkspace(){
- const[tab,setTab]=useState<(typeof tabs)[number][0]>("overview");
+ const[tab,setTab]=useState<(typeof tabs)[number][0]>("overview");const[integration,setIntegration]=useState<{status?:string;external_slug?:string}|null>(null);useEffect(()=>{fetch("/api/loyalty/status",{cache:"no-store"}).then(r=>r.json()).then(x=>setIntegration(x.integration??null)).catch(()=>setIntegration(null))},[]);
  return <div className="loyaltyWorkspace">
-  <header className="dashHeader"><div><p className="dashEyebrow">FIDÉLITÉ BIKÉO · MOTEUR DIGIFYD</p><h1>Fidélité & Wallet</h1><p>Carte Apple Wallet et Google Wallet, programme fidélité, clients et communication depuis Bikéo.</p></div><span className="loyaltyStatus">Connexion Digifyd à finaliser</span></header>
+  <header className="dashHeader"><div><p className="dashEyebrow">FIDÉLITÉ BIKÉO · MOTEUR DIGIFYD</p><h1>Fidélité & Wallet</h1><p>Carte Apple Wallet et Google Wallet, programme fidélité, clients et communication depuis Bikéo.</p></div><span className={"loyaltyStatus "+(integration?.status==="active"||integration?.status==="provisioned"?"connected":"")}>{integration?.status==="active"||integration?.status==="provisioned"?"Moteur Digifyd provisionné":"Connexion Digifyd à finaliser"}</span></header>
   <nav className="loyaltyTabs">{tabs.map(([id,label])=><button key={id} className={tab===id?"on":""} onClick={()=>setTab(id)}>{label}</button>)}</nav>
   {tab==="overview"&&<section className="loyaltyOverview"><div className="statGrid"><div className="statCard"><span>Clients fidélité</span><strong>—</strong><small>CRM Digifyd</small></div><div className="statCard"><span>Cartes Wallet</span><strong>—</strong><small>Apple + Google</small></div><div className="statCard"><span>Récompenses</span><strong>—</strong><small>disponibles</small></div><div className="statCard"><span>Notifications</span><strong>—</strong><small>campagnes envoyées</small></div></div><div className="loyaltyGrid"><Feature title="Ma carte" text="Personnalise le logo, la bannière, les couleurs et les informations visibles dans Wallet." action={()=>setTab("card")}/><Feature title="Programme fidélité" text="Configure points, tampons, seuils, récompenses et règles d’attribution." action={()=>setTab("program")}/><Feature title="CRM clients" text="Retrouve les membres, leur Wallet, leur progression et leur dernière visite." action={()=>setTab("customers")}/><Feature title="Notifications Wallet" text="Prépare des campagnes et communique directement sur les cartes installées." action={()=>setTab("notifications")}/></div></section>}
   {tab==="card"&&<Panel eyebrow="PERSONNALISATION WALLET" title="Ma carte" text="Logo, bannière, nom de la carte, couleurs, téléphone, adresse, boutons et champs complémentaires : on réutilise ici le studio Digifyd existant."/ >}
