@@ -2,37 +2,37 @@
 import {useMemo,useRef,useState,useEffect} from "react";
 import {useRouter} from "next/navigation";
 import {createClient} from "../lib/supabase/client";
-import QrScanner from "qr-scanner";
+
 
 export default function QrConfigurator({qrs,bikes}:{qrs:any[];bikes:any[]}){
  const s=createClient(),router=useRouter();
  const[qr,setQr]=useState(""),[brand,setBrand]=useState(""),[product,setProduct]=useState(""),[search,setSearch]=useState(""),[scanning,setScanning]=useState(false),[scanHint,setScanHint]=useState(""),[origin,setOrigin]=useState("");
- const video=useRef<HTMLVideoElement>(null); const scannerRef=useRef<QrScanner|null>(null);
- useEffect(()=>{setOrigin(window.location.origin);return()=>{scannerRef.current?.stop();scannerRef.current?.destroy();scannerRef.current=null}},[]);
+ const readerId="bikeo-live-reader"; const scannerRef=useRef<any>(null); const handledRef=useRef(false);
+ useEffect(()=>{setOrigin(window.location.origin);return()=>{const scanner=scannerRef.current;if(scanner?.isScanning)Promise.resolve(scanner.stop()).catch(()=>{});scannerRef.current=null}},[]);
  const brands=useMemo(()=>Array.from(new Set(bikes.map(b=>b.brand))).sort() as string[],[bikes]);
  const filtered=useMemo(()=>{const list=brand?bikes.filter(b=>b.brand===brand):[];const q=search.trim().toLowerCase();return q?list.filter(b=>(b.name+" "+(b.year||"")).toLowerCase().includes(q)).slice(0,12):[]},[bikes,brand,search]);
  const target=qrs.find(x=>x.qr_number.toLowerCase()===qr.trim().toLowerCase());
  const selected=bikes.find(b=>b.id===product);
  async function save(){if(!target){alert("Ce numéro de QR n'appartient pas à ton magasin.");return}if(!product){alert("Choisis un vélo.");return}const{error}=await s.from("store_qr_codes").update({product_id:product,updated_at:new Date().toISOString()}).eq("id",target.id);if(error)alert(error.message);else{setQr("");setBrand("");setProduct("");setSearch("");router.refresh()}}
  async function scan(){
-  if(scanning){scannerRef.current?.stop();scannerRef.current?.destroy();scannerRef.current=null;setScanning(false);setScanHint("");return}
+  if(scanning){const old=scannerRef.current;try{if(old?.isScanning)await old.stop()}catch{}scannerRef.current=null;handledRef.current=false;setScanning(false);setScanHint("");return}
   try{
-   setScanning(true);setScanHint("Ouverture de la caméra…");
+   setScanning(true);handledRef.current=false;setScanHint("Initialisation de la caméra…");
    await new Promise<void>(resolve=>requestAnimationFrame(()=>requestAnimationFrame(()=>resolve())));
-   const el=video.current;if(!el)throw new Error("video");
-   const scanner=new QrScanner(el,(result:any)=>{
-    const raw=String(typeof result==="string"?result:result?.data||"").trim();
-    if(!raw)return;
+   const {Html5Qrcode}=await import("html5-qrcode");
+   const scanner=new Html5Qrcode(readerId,{verbose:false});scannerRef.current=scanner;
+   const cameras=await Html5Qrcode.getCameras();if(!cameras?.length)throw new Error("Aucune caméra");
+   const rear=cameras.find((c:any)=>/back|rear|environment|arrière/i.test(c.label))||cameras[cameras.length-1];
+   await scanner.start(rear.id,{fps:10,qrbox:{width:250,height:250},aspectRatio:1},async(raw:string)=>{
+    if(handledRef.current)return;
     let match=qrs.find((x:any)=>raw.includes(x.code)||raw.toLowerCase().includes(String(x.qr_number).toLowerCase()));
-    if(!match){try{const u=new URL(raw);const code=decodeURIComponent(u.pathname.split("/").filter(Boolean).pop()||"");match=qrs.find((x:any)=>code===x.code||code.toLowerCase()===String(x.qr_number).toLowerCase())}catch{}}
-    if(match){scanner.stop();scanner.destroy();scannerRef.current=null;setQr(match.qr_number);setScanning(false);setScanHint("")}
-    else setScanHint("QR lu, mais il n'appartient pas à ce magasin.");
-   },{preferredCamera:"environment",maxScansPerSecond:20,returnDetailedScanResult:true,highlightScanRegion:true,highlightCodeOutline:true});
-   scannerRef.current=scanner;
-   await scanner.start();
+    if(!match){try{const u=new URL(raw,window.location.origin);const parts=u.pathname.split("/").filter(Boolean);const token=u.searchParams.get("id")||u.searchParams.get("token")||parts[parts.length-1]||"";match=qrs.find((x:any)=>token===x.code||token.toLowerCase()===String(x.qr_number).toLowerCase())}catch{}}
+    if(!match){setScanHint("QR détecté mais non reconnu par Bikéo.");return}
+    handledRef.current=true;setScanHint("QR reconnu…");try{if(scanner.isScanning)await scanner.stop()}catch{}scannerRef.current=null;setQr(match.qr_number);setScanning(false);setScanHint("");
+   },()=>{});
    setScanHint("Place le QR dans le cadre. La détection est automatique.");
-  }catch(e){scannerRef.current?.destroy();scannerRef.current=null;setScanning(false);setScanHint("");alert("Impossible d'ouvrir le scanner. Vérifie l'autorisation caméra du navigateur.")}
+  }catch(e){console.error("BIKEO_CAMERA",e);scannerRef.current=null;setScanning(false);setScanHint("");alert("Impossible d'ouvrir le scanner. Vérifie l'autorisation Caméra du navigateur puis recharge.")}
  }
  const scanUrl=target&&origin?origin+"/q/"+target.code:"";
- return <section className="panel merchantQrConfig"><div><small>CONFIGURER UNE ACCROCHE</small><h2>Scanner ou saisir le QR</h2><p>Scanne le support ou saisis son numéro, puis recherche directement le modèle à associer.</p>{scanUrl&&<div className="qrTestCard"><img src={"https://api.qrserver.com/v1/create-qr-code/?size=180x180&data="+encodeURIComponent(scanUrl)} alt={"QR "+target.qr_number}/><div><strong>{target.qr_number}</strong><span>QR de test</span><a href={scanUrl} target="_blank" rel="noreferrer">Tester le lien ↗</a></div></div>}</div><div className="qrConfigForm"><div className="qrNumberLine"><input value={qr} onChange={e=>setQr(e.target.value)} placeholder="N° QR exact · ex. 94D37-0001"/><button type="button" onClick={scan}>{scanning?"Fermer le scanner":"Scanner le QR"}</button></div>{scanning&&<div className="qrScannerWrap"><video className="qrCamera" ref={video} muted playsInline/><div className="qrScanFrame"/>{scanHint&&<p className="qrScanHint">{scanHint}</p>}</div>}<select value={brand} onChange={e=>{setBrand(e.target.value);setProduct("");setSearch("")}}><option value="">1. Sélectionner la marque</option>{brands.map(b=><option key={b} value={b}>{b}</option>)}</select><div className="bikeSearchBox"><input value={search} disabled={!brand} onChange={e=>{setSearch(e.target.value);setProduct("")}} placeholder={brand?"2. Tape le nom du modèle · ex. Wild, Rise, Orca…":"2. Sélectionne d'abord la marque"}/>{brand&&search&&<div className="bikeSearchResults">{filtered.length?filtered.map(b=><button type="button" key={b.id} className={product===b.id?"selected":""} onClick={()=>{setProduct(b.id);setSearch(b.name+(b.year?" · "+b.year:""))}}><strong>{b.name}</strong>{b.year&&<span>{b.year}</span>}</button>):<span className="noBikeResult">Aucun modèle trouvé</span>}</div>}</div>{selected&&<div className="selectedBike">✓ {selected.brand} · <strong>{selected.name}</strong>{selected.year?" · "+selected.year:""}</div>}<button className="primaryBtn" type="button" onClick={save}>Associer ce QR au vélo</button></div></section>
+ return <section className="panel merchantQrConfig"><div><small>CONFIGURER UNE ACCROCHE</small><h2>Scanner ou saisir le QR</h2><p>Scanne le support ou saisis son numéro, puis recherche directement le modèle à associer.</p>{scanUrl&&<div className="qrTestCard"><img src={"https://api.qrserver.com/v1/create-qr-code/?size=180x180&data="+encodeURIComponent(scanUrl)} alt={"QR "+target.qr_number}/><div><strong>{target.qr_number}</strong><span>QR de test</span><a href={scanUrl} target="_blank" rel="noreferrer">Tester le lien ↗</a></div></div>}</div><div className="qrConfigForm"><div className="qrNumberLine"><input value={qr} onChange={e=>setQr(e.target.value)} placeholder="N° QR exact · ex. 94D37-0001"/><button type="button" onClick={scan}>{scanning?"Fermer le scanner":"Scanner le QR"}</button></div>{scanning&&<div className="qrScannerWrap"><div id={readerId}/>{scanHint&&<p className="qrScanHint staticHint">{scanHint}</p>}</div>}<select value={brand} onChange={e=>{setBrand(e.target.value);setProduct("");setSearch("")}}><option value="">1. Sélectionner la marque</option>{brands.map(b=><option key={b} value={b}>{b}</option>)}</select><div className="bikeSearchBox"><input value={search} disabled={!brand} onChange={e=>{setSearch(e.target.value);setProduct("")}} placeholder={brand?"2. Tape le nom du modèle · ex. Wild, Rise, Orca…":"2. Sélectionne d'abord la marque"}/>{brand&&search&&<div className="bikeSearchResults">{filtered.length?filtered.map(b=><button type="button" key={b.id} className={product===b.id?"selected":""} onClick={()=>{setProduct(b.id);setSearch(b.name+(b.year?" · "+b.year:""))}}><strong>{b.name}</strong>{b.year&&<span>{b.year}</span>}</button>):<span className="noBikeResult">Aucun modèle trouvé</span>}</div>}</div>{selected&&<div className="selectedBike">✓ {selected.brand} · <strong>{selected.name}</strong>{selected.year?" · "+selected.year:""}</div>}<button className="primaryBtn" type="button" onClick={save}>Associer ce QR au vélo</button></div></section>
 }
