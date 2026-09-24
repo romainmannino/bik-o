@@ -13,12 +13,15 @@
     "@supabase/supabase-js": "^2.117.1",
     "next": "^15.5.7",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "qrcode": "^1.5.4",
+    "jspdf": "^3.0.2"
   },
   "devDependencies": {
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "@types/qrcode": "^1.5.5"
   }
 }
