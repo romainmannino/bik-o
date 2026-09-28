@@ -371,3 +371,26 @@
  .socialPhoneCrop{height:90%;border-radius:24px}
  .walletCapture{transform:scale(.82)}
 }
+
+
+/* Homepage proof visuals — final cleanup */
+.socialShowroomScene{padding:24px!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden}
+.socialPhoneCrop{height:92%;width:auto;aspect-ratio:625/1310;position:relative;overflow:hidden;border-radius:34px;background:transparent;box-shadow:0 28px 60px #0006}
+.socialPhoneCrop>img{position:absolute!important;height:100%!important;width:auto!important;max-width:none!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;clip-path:none!important;filter:none!important}
+
+/* scalable version of the supplied transparent handlebar hanger */
+.plvHanger{width:225px;height:510px;position:relative;display:flex;flex-direction:column;filter:drop-shadow(0 26px 36px #0008);transform:rotate(-2deg);z-index:2}
+.plvHangerTop{height:195px;position:relative;background-image:url("https://rzryxngvgmhlqbrstxrq.supabase.co/storage/v1/object/public/storefront-assets/4d09c2c4-d399-4385-900c-5df9e2ee302b/hero-1790192567023.webp");background-size:cover;background-position:center}
+.plvHangerArm{position:absolute;left:-32px;top:57px;width:62px;height:70px;background:inherit;background-size:225px 195px;background-position:left center}
+.plvHangerHole{position:absolute;width:106px;height:106px;left:50%;top:38px;transform:translateX(-50%);border-radius:50%;background:#fff}
+.plvHangerLogo{height:72px;background:#fff;display:grid;place-items:center}.plvHangerLogo b{font-size:43px;letter-spacing:-4px;color:#172128}.plvHangerLogo span{color:#28b78f}
+.plvHangerBody{flex:1;background:#030404;color:#fff;text-align:center;padding:23px 15px 16px}.plvHangerBody strong{font-size:15px;line-height:1.2}.plvHangerQr{width:142px;height:142px;background:#fff;margin:24px auto 0;padding:8px}.plvHangerQr svg{display:block;width:100%;height:100%}
+
+/* Apple Wallet proof: same visual hierarchy/proportions as the real capture */
+.walletProofScene{background:#f4f3f8!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:20px!important;overflow:hidden}
+.walletProofPhone{height:94%;aspect-ratio:706/1536;background:#f4f3f8;border-radius:42px;padding:14px 12px 18px;position:relative;box-shadow:0 30px 65px #10101830;color:#111}
+.walletProofStatus{height:28px;font-size:14px;font-weight:800;padding:0 12px;display:flex;justify-content:space-between}
+.walletProofNotif{position:absolute;z-index:5;left:4px;right:4px;top:42px;border:1px solid #d8d8dd;background:#fafafbf2;backdrop-filter:blur(16px);border-radius:24px;padding:11px 12px;display:grid;grid-template-columns:34px 1fr auto;gap:7px;box-shadow:0 8px 20px #0002}.walletProofLogo{width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid #ddd;display:grid;place-items:center;font-weight:900}.walletProofNotif b{font-size:12px}.walletProofNotif p{font-size:10px;line-height:1.22;margin:1px 0 0}.walletProofNotif small{font-size:9px;color:#777}
+.walletProofCard{height:67%;border-radius:20px;position:relative;overflow:hidden;background-image:linear-gradient(0deg,#20150dd9 0%,#20150d00 47%),url("https://rzryxngvgmhlqbrstxrq.supabase.co/storage/v1/object/public/storefront-assets/4d09c2c4-d399-4385-900c-5df9e2ee302b/hero-1790192567023.webp");background-size:cover;background-position:center;box-shadow:0 9px 20px #0002}
+.walletProofOmega{position:absolute;top:17px;left:17px;font-size:8px;line-height:.9;font-weight:800}.walletProofOmega b{font-size:12px}.walletProofQr{position:absolute;left:50%;top:55%;transform:translate(-50%,-50%);width:132px;height:132px;background:#fff;border-radius:7px;padding:9px}.walletProofQr svg{width:100%;height:100%;display:block}.walletProofQr small{position:absolute;left:0;right:0;bottom:4px;text-align:center;font-size:9px}.walletProofMeta{position:absolute;left:17px;right:17px;bottom:24px;color:#fff;display:flex;justify-content:space-between;font-family:monospace;font-size:10px}.walletProofMeta span:last-child{text-align:right}.walletProofMeta b{font-size:15px;font-weight:500}.walletProofDots{text-align:center;font-size:9px;margin:8px 0}.walletProofDots i{color:#aaa;font-style:normal;margin-left:8px}.walletProofActions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.walletProofActions div{height:82px;background:#fff;border-radius:22px;padding:10px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;font-size:16px}.walletProofActions b{font-size:9px;line-height:1.12;text-align:left}.walletProofActions small{font-size:9px;color:#999}
+@media(max-width:700px){.socialShowroomScene{padding:14px!important}.socialPhoneCrop{height:90%}.plvHanger{width:165px;height:385px}.plvHangerTop{height:145px}.plvHangerLogo{height:50px}.plvHangerLogo b{font-size:31px}.plvHangerBody{padding:15px 9px}.plvHangerBody strong{font-size:11px}.plvHangerQr{width:103px;height:103px;margin-top:14px}.walletProofPhone{height:91%}}
