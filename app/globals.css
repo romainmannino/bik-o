@@ -455,3 +455,33 @@
 /* Real Bikéo handlebar hanger artwork on public home */
 .homeHangerArtwork{position:absolute;z-index:4;left:13%;top:9%;height:78%;width:auto;object-fit:contain;filter:drop-shadow(0 14px 22px rgba(0,0,0,.18));transform:none}
 @media(max-width:900px){.homeHangerArtwork{left:4%;top:12%;height:70%}}
+
+
+/* Storefront merchandising + loyalty v40 */
+.premiumCategories .practiceRail,.previewSection .practiceRail{display:grid!important;gap:12px!important;overflow:visible!important;grid-template-columns:repeat(var(--practice-count,4),minmax(0,1fr))!important}
+.practiceRail.count1{--practice-count:1}.practiceRail.count2{--practice-count:2}.practiceRail.count3{--practice-count:3}.practiceRail.count4{--practice-count:4}
+.premiumCategories .practiceTile,.previewSection .practiceTile{width:auto!important;min-width:0!important;min-height:360px}
+.practiceRail.count1 .practiceTile{min-height:430px}.practiceRail.count2 .practiceTile{min-height:400px}.practiceRail.count3 .practiceTile{min-height:380px}
+.brandMarquee{overflow:hidden!important;width:100%;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.brandTrack{display:flex!important;width:max-content!important;align-items:center;gap:56px!important;animation:bikeoBrandMarquee 24s linear infinite}
+.brandTrack span{flex:0 0 auto!important;min-width:150px!important;display:grid!important;place-items:center}
+.brandTrack img{max-width:145px!important;max-height:62px!important;object-fit:contain}
+@keyframes bikeoBrandMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.featuredRail{display:flex!important;grid-template-columns:none!important;overflow-x:auto!important;scroll-snap-type:x proximity;gap:14px!important;padding-bottom:10px;scrollbar-width:thin}
+.featuredRail .featuredBike,.featuredRail>article{flex:0 0 clamp(230px,27vw,340px)!important;scroll-snap-align:start}
+.bikeVisual{position:relative}.discountBadge{position:absolute;right:10px;top:10px;background:#171a19;color:#fff;border-radius:99px;padding:7px 9px;font-size:11px;font-style:normal;font-weight:900}
+.salePrice{display:flex;align-items:baseline;gap:9px}.salePrice s{color:#8b928e;font-size:12px}.salePrice strong{color:#171a19}
+.stockDisclaimer{display:block;margin-top:7px;color:#777;font-size:9px;font-weight:400;line-height:1.35}
+.featuredSettings{display:grid;gap:10px}.featuredSettings>small{font-size:9px;letter-spacing:1.3px;color:#299d77;font-weight:800}.featuredSetting{border:1px solid var(--line);border-radius:9px;padding:11px;display:grid;gap:9px}.featuredSetting>b{font-size:12px}.inlineCheck{display:flex!important;align-items:center;gap:7px}.inlineCheck input{width:auto!important}.inlineCheck span{font-size:10px!important}
+.storeLoyalty{margin:80px 6vw;display:grid;grid-template-columns:minmax(220px,.7fr) minmax(0,1.45fr) 190px;gap:34px;align-items:stretch;background:#f3f5f2;border-radius:24px;overflow:hidden;min-height:390px}
+.loyaltyVisual{background:#dfe5e1 center/cover no-repeat;position:relative;min-height:390px}.loyaltyVisual img{position:absolute;left:24px;top:24px;max-width:135px;max-height:58px;object-fit:contain;background:#fff;padding:8px;border-radius:8px}
+.loyaltyCopy{padding:48px 0;align-self:center}.loyaltyCopy>p{font-size:9px;letter-spacing:1.8px;color:#278e6d;font-weight:900}.loyaltyCopy h2{font-size:clamp(30px,3vw,48px);line-height:1;letter-spacing:-2px;margin:12px 0 30px}.loyaltyBenefits{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.loyaltyBenefits span{font-size:11px;line-height:1.45;color:#66706b}.loyaltyBenefits b{display:block;color:#171a19;font-size:11px;margin-bottom:6px}.walletJoin{display:inline-block;margin-top:30px;background:#171a19;color:#fff!important;text-decoration:none;border-radius:9px;padding:13px 16px;font-size:11px;font-weight:900}
+.loyaltyQr{align-self:center;justify-self:center;text-decoration:none;color:#171a19;text-align:center;padding-right:24px}.loyaltyQr img{display:block;width:150px;height:150px;background:#fff;padding:8px;border-radius:10px}.loyaltyQr small{display:block;width:150px;margin-top:8px;font-size:9px;line-height:1.3;color:#66706b}.loyaltyDisabled{grid-template-columns:minmax(220px,.7fr) 1fr}.loyaltyDisabled .loyaltyCopy{padding-right:45px}
+.editorLoyalty{margin:35px!important;grid-template-columns:180px 1fr 120px;min-height:260px;border-radius:16px}.editorLoyalty .loyaltyVisual{min-height:260px}.editorLoyalty .loyaltyCopy{padding:25px 0}.editorLoyalty .loyaltyCopy h2{font-size:27px}.editorLoyalty .loyaltyBenefits{gap:10px}.loyaltyQrMock{font-size:80px;display:grid;place-items:center}.loyaltyQrMock small{font-size:8px}
+@media(max-width:800px){
+ .premiumCategories .practiceRail,.previewSection .practiceRail{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .premiumCategories .practiceTile,.previewSection .practiceTile{min-height:260px!important}
+ .practiceRail.count1{grid-template-columns:1fr!important}.practiceRail.count3 .practiceTile:first-child{grid-column:1/-1}
+ .brandTrack{gap:30px!important;animation-duration:18s}.brandTrack span{min-width:120px!important}
+ .storeLoyalty{margin:45px 20px;grid-template-columns:1fr;gap:0}.loyaltyVisual{min-height:240px}.loyaltyCopy{padding:30px 24px}.loyaltyBenefits{grid-template-columns:1fr;gap:12px}.loyaltyQr{padding:0 0 28px}.editorLoyalty{margin:20px!important;grid-template-columns:1fr}.editorLoyalty .loyaltyQrMock{padding-bottom:20px}
+}
