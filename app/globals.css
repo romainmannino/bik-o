@@ -490,3 +490,12 @@
 }
 
 .loyaltyReward{margin:-12px 0 24px;padding:13px 15px;border-left:3px solid #299d77;background:#fff;border-radius:0 9px 9px 0;max-width:560px}.loyaltyReward small{display:block;font-size:8px;letter-spacing:1.3px;color:#299d77;font-weight:900;margin-bottom:4px}.loyaltyReward strong{font-size:13px;line-height:1.35}.walletJoin{display:inline-flex!important;align-items:center;gap:9px}.appleWalletMark{width:25px;height:25px;background:#222;border-radius:6px;display:inline-block;position:relative;overflow:hidden;flex:none}.appleWalletMark i{position:absolute;left:5px;width:15px;height:5px;border-radius:3px}.appleWalletMark i:nth-child(1){top:5px;background:#4ca9e9}.appleWalletMark i:nth-child(2){top:8px;background:#e7bf31}.appleWalletMark i:nth-child(3){top:11px;background:#46b968}.appleWalletMark i:nth-child(4){top:14px;background:#e76861}
+
+/* Optional full-width editorial block between featured bikes and loyalty */
+.storePromoBlock{position:relative;min-height:clamp(360px,48vw,650px);margin:0;background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:clamp(28px,5vw,76px);color:#fff;overflow:hidden}
+.storePromoBlock>div{position:relative;z-index:1;max-width:780px}
+.storePromoBlock h2{margin:0;font-family:var(--heading);font-size:clamp(38px,5vw,76px);line-height:.98;letter-spacing:-.04em;color:#fff}
+.storePromoBlock p{margin:18px 0 0;max-width:680px;font-size:clamp(16px,1.6vw,24px);line-height:1.35;color:#fff}
+.editorPromoBlock{min-height:420px}
+.designRail textarea{width:100%;min-height:90px;resize:vertical;border:1px solid #d8ddd9;border-radius:9px;padding:10px;font:inherit}
+@media(max-width:650px){.storePromoBlock{min-height:420px;padding:28px 22px}.storePromoBlock h2{font-size:42px}.storePromoBlock p{font-size:17px}}
