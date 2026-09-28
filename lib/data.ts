@@ -11,3 +11,6 @@ export async function getStoreBrands(storeSlug="cycles-omega"){const supabase=aw
 
 
 export async function getStoreLoyaltyIntegration(storeId:string){const supabase=await createClient();const {data}=await supabase.from("store_loyalty_integrations").select("external_slug,status").eq("store_id",storeId).maybeSingle();return data??null}
+
+
+export async function getStoreLoyaltyPublicData(externalBusinessId:string|null|undefined){if(!externalBusinessId)return null;const base=process.env.DIGIFYD_API_URL,secret=process.env.DIGIFYD_BIKEO_SECRET;if(!base||!secret)return null;try{const r=await fetch(base.replace(/\/$/,"")+"/api/integrations/bikeo/business-data?businessId="+encodeURIComponent(externalBusinessId),{headers:{"x-bikeo-secret":secret},cache:"no-store"});if(!r.ok)return null;const x=await r.json();return x?.data??x??null}catch{return null}}
