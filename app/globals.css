@@ -346,3 +346,28 @@
 .walletCaptureBottom{position:absolute;left:16px;right:16px;bottom:22px;color:#fff;display:flex;justify-content:space-between;font-family:monospace;font-size:10px}.walletCaptureBottom span:last-child{text-align:right}.walletCaptureBottom b{font-size:14px;font-weight:500}
 .walletCaptureActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.walletCaptureActions div{height:78px;background:#fff;border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:8px;font-size:17px}.walletCaptureActions b{font-size:9px;line-height:1.15}
 @media(max-width:700px){.socialShowroomScene>img{width:82%!important;transform:scale(1.45)}.walletCapture{transform:scale(.88)}}
+
+
+/* Correct the proof visuals: preserve the actual screenshots instead of stretching them */
+.socialShowroomScene{display:flex!important;align-items:center!important;justify-content:center!important;padding:24px!important}
+.socialPhoneCrop{height:92%;aspect-ratio:625/1310;position:relative;overflow:hidden;border-radius:30px;box-shadow:0 26px 55px #0007;background:#fff;z-index:2}
+.socialPhoneCrop>img{position:absolute!important;height:auto!important;width:246%!important;max-width:none!important;left:-32%!important;top:-5.2%!important;transform:none!important;clip-path:none!important;filter:none!important}
+.socialShowroomScene>img{transform:none}
+.socialShowroomScene .realBadge{z-index:4}
+
+.walletCaptureScene{padding:18px!important}
+.walletCapture{width:365px;height:590px;padding:14px 13px 16px;border-radius:42px}
+.walletCaptureNotification{top:46px;left:5px;right:5px;padding:11px 12px;grid-template-columns:38px 1fr auto}
+.walletCaptureNotification .walletCaptureLogo{width:38px;height:38px}
+.walletCaptureNotification b{font-size:13px}.walletCaptureNotification p{font-size:11px}.walletCaptureNotification small{font-size:10px}
+.walletCaptureCard{height:442px;border-radius:21px}
+.walletCaptureQr{width:142px;height:142px;padding:10px;box-sizing:border-box;display:block}
+.walletCaptureQr svg{display:block;width:100%;height:100%}
+.walletCaptureQr small{left:0;right:0;text-align:center;bottom:4px;font-size:9px}
+.walletCaptureBottom{bottom:23px;font-size:11px}.walletCaptureBottom b{font-size:16px}
+.walletCaptureActions{gap:9px;margin-top:10px}.walletCaptureActions div{height:83px;border-radius:21px;padding:11px}.walletCaptureActions b{font-size:10px}
+@media(max-width:700px){
+ .socialShowroomScene{padding:14px!important}
+ .socialPhoneCrop{height:90%;border-radius:24px}
+ .walletCapture{transform:scale(.82)}
+}
