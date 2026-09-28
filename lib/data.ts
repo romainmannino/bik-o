@@ -10,7 +10,7 @@ export async function getStoreStats(storeSlug="cycles-omega"){const products:any
 export async function getStoreBrands(storeSlug="cycles-omega"){const supabase=await createClient();const store=await getStore(storeSlug);const {data,error}=await supabase.from("store_brands").select("is_featured,logo_override_url,brands(id,name,slug,logo_url,website_url)").eq("store_id",store.id);if(error)throw error;return (data??[]).map((x:any)=>({...x.brands,logo_url:x.logo_override_url||x.brands?.logo_url,is_featured:x.is_featured})).filter(Boolean)}
 
 
-export async function getStoreLoyaltyIntegration(storeId:string){const supabase=await createClient();const {data}=await supabase.from("store_loyalty_integrations").select("external_slug,status").eq("store_id",storeId).maybeSingle();return data??null}
+export async function getStoreLoyaltyIntegration(storeId:string){const supabase=await createClient();const {data}=await supabase.from("store_loyalty_integrations").select("external_business_id,external_slug,status").eq("store_id",storeId).maybeSingle();return data??null}
 
 
 export async function getStoreLoyaltyPublicData(externalBusinessId:string|null|undefined){if(!externalBusinessId)return null;const base=process.env.DIGIFYD_API_URL,secret=process.env.DIGIFYD_BIKEO_SECRET;if(!base||!secret)return null;try{const r=await fetch(base.replace(/\/$/,"")+"/api/integrations/bikeo/business-data?businessId="+encodeURIComponent(externalBusinessId),{headers:{"x-bikeo-secret":secret},cache:"no-store"});if(!r.ok)return null;const x=await r.json();return x?.data??x??null}catch{return null}}
