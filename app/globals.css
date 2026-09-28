@@ -517,3 +517,38 @@
 .alignedRail .editZone h3{margin:0 0 12px;font-size:15px}
 .alignedRail .editZoneHeader{grid-row:1}.alignedRail .editZoneHero{grid-row:2}.alignedRail .editZonePractices{grid-row:3}.alignedRail .editZoneBrands{grid-row:4}.alignedRail .editZoneVisual{grid-row:5}.alignedRail .editZoneFeatured{grid-row:6}.alignedRail .editZoneLoyalty{grid-row:7}.alignedRail .editZoneStore{grid-row:8}
 @media(max-width:760px){.alignedRail{display:block!important}.alignedRail .editZone{margin:10px 0;overflow:visible}}
+
+/* Loyalty scanner — checkout-first desktop + mobile UX */
+.loyaltyPanel:has(.scanTools){padding:24px;overflow:hidden}
+.loyaltyPanel:has(.scanTools)>h2{margin-bottom:18px}
+.scanTools{display:grid;grid-template-columns:auto minmax(240px,540px);gap:10px;align-items:center;margin-bottom:18px}
+.scanTools .loyaltySave{height:46px;margin:0;padding:0 18px;border-radius:11px}
+.scanTools .loyaltySearch{width:100%;height:46px;margin:0;border-radius:11px;font-size:14px}
+.scanCustomer{display:grid;grid-template-columns:220px minmax(0,1fr);align-items:start!important;gap:20px!important;margin-top:12px;padding:18px!important;border:1px solid var(--line)!important;border-radius:16px;background:#fafbfa}
+.scanCustomer>div:first-child{padding:4px 2px}.scanCustomer>div:first-child strong{font-size:17px;line-height:1.15}.scanCustomer>div:first-child span{margin-top:6px;font-size:11px;line-height:1.45}
+.scanCheckout{display:grid!important;grid-template-columns:1fr 1fr;gap:14px!important;padding:18px;background:#fff;border:1px solid var(--line);border-radius:14px}
+.scanCheckoutHead{grid-column:1/-1;display:flex!important;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.scanCheckoutHead span{font-size:11px!important;font-weight:800;color:var(--muted)}.scanCheckoutHead strong{font-size:25px}
+.scanCheckout>label:not(.check){display:grid;gap:6px;font-size:11px;font-weight:800}.scanCheckout>label:not(.check) .loyaltySearch{width:100%;height:46px;margin:0;font-size:15px}
+.scanCheckout .check{display:flex;align-items:center;gap:8px;align-self:end;min-height:46px;padding:0 12px;border:1px solid var(--line);border-radius:10px;font-size:11px;font-weight:800}.scanCheckout .check input{width:18px;height:18px;accent-color:#171a19}
+.scanPointsPreview{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 16px;background:#effaf6;border-radius:11px}.scanPointsPreview span{font-size:11px!important;font-weight:800}.scanPointsPreview strong{font-size:20px;color:#14785a}
+.scanValidate{grid-column:1/-1!important;width:100%;min-height:48px!important;border:0!important;border-radius:11px!important;background:#171a19!important;color:#fff!important;font-size:11px!important;letter-spacing:.02em}
+.scanValidate:disabled{opacity:.32}
+.scanManual{grid-column:1/-1;border-top:1px solid var(--line);padding-top:12px}.scanManual summary{cursor:pointer;font-size:11px;font-weight:900;list-style:none}.scanManual summary:before{content:"＋";margin-right:7px}.scanManual[open] summary:before{content:"−"}.scanManual label{display:grid;gap:6px;margin-top:12px;font-size:11px;font-weight:800}.scanManual button{margin-top:9px!important;width:100%;min-height:42px}
+.scanCheckout>small{grid-column:1/-1;text-align:center;font-size:10px;color:var(--muted)}
+.scanMessage{padding:10px 12px;border-radius:9px;background:#effaf6}
+.loyaltyPanel:has(.scanTools)>.scanHint{display:block;margin-top:16px;text-align:center;font-size:10px}
+@media(max-width:720px){
+ .loyaltyPanel:has(.scanTools){padding:16px;border-radius:0;border-left:0;border-right:0}
+ .loyaltyPanel:has(.scanTools)>small{font-size:8px}.loyaltyPanel:has(.scanTools)>h2{font-size:22px}
+ .scanTools{grid-template-columns:1fr}.scanTools .loyaltySave,.scanTools .loyaltySearch{width:100%;height:50px}
+ .loyaltyReader{width:100%;margin:12px 0}
+ .scanCustomer{grid-template-columns:1fr;gap:10px!important;margin-top:12px;padding:12px!important;border-radius:14px}
+ .scanCustomer>div:first-child{display:grid;grid-template-columns:1fr auto;align-items:center}.scanCustomer>div:first-child span{grid-column:1/-1}
+ .scanCheckout{grid-template-columns:1fr;padding:14px;gap:11px!important}
+ .scanCheckoutHead,.scanPointsPreview,.scanValidate,.scanManual,.scanCheckout>small{grid-column:1}
+ .scanCheckoutHead strong{font-size:23px}.scanCheckout .check{align-self:auto}
+ .scanPointsPreview{padding:13px}.scanPointsPreview strong{font-size:19px}
+ .scanValidate{min-height:52px!important;font-size:12px!important}
+ .loyaltyPanel:has(.scanTools)>.scanHint{line-height:1.45}
+}
