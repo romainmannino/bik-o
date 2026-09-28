@@ -508,3 +508,12 @@
 .alignedRail .railSectionTitle:first-child{color:#299d77}
 @media(max-width:1050px){.globalDesignBar{grid-template-columns:repeat(3,1fr)}.globalDesignBar>div{grid-column:1/-1}}
 @media(max-width:760px){.visualEditor.alignedEditor{display:block}.globalDesignBar{display:grid;grid-template-columns:1fr 1fr;margin-bottom:14px}.globalDesignBar>div{grid-column:1/-1}.alignedRail{margin-bottom:14px}}
+
+/* Storefront editor: each control block follows its matching preview section */
+.alignedEditor{--editor-head:72px}
+.alignedRail{display:grid!important;grid-template-rows:72px 430px 430px 150px minmax(360px,auto) minmax(520px,auto) 390px minmax(520px,auto);gap:0;padding:0!important;background:transparent!important;border:0!important}
+.alignedRail .editZone{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;margin:5px 0;overflow:auto}
+.alignedRail .editZone small{display:block;margin-bottom:4px;font-size:9px;font-weight:800;letter-spacing:1.3px;color:#299d77}
+.alignedRail .editZone h3{margin:0 0 12px;font-size:15px}
+.alignedRail .editZoneHeader{grid-row:1}.alignedRail .editZoneHero{grid-row:2}.alignedRail .editZonePractices{grid-row:3}.alignedRail .editZoneBrands{grid-row:4}.alignedRail .editZoneVisual{grid-row:5}.alignedRail .editZoneFeatured{grid-row:6}.alignedRail .editZoneLoyalty{grid-row:7}.alignedRail .editZoneStore{grid-row:8}
+@media(max-width:760px){.alignedRail{display:block!important}.alignedRail .editZone{margin:10px 0;overflow:visible}}
