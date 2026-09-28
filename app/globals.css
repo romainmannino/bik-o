@@ -410,3 +410,19 @@
  .walletProofScene{padding:28px!important}
  .walletProofPhone{height:94%!important;max-height:535px!important;width:auto!important}
 }
+
+
+/* Homepage proof visuals — isolate each scene to prevent cross-scene leakage */
+.realProof .realScene{position:relative}
+.realProof .realPhotoFrame{min-width:0}
+.socialProofBadge{display:none!important}
+.plvShowroomScene .socialPhoneCrop{height:88%!important;max-width:32%!important;aspect-ratio:625/1310!important;flex:0 0 auto!important}
+.plvShowroomScene .socialPhoneCrop>img{position:absolute!important;height:100%!important;width:auto!important;max-width:none!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;clip-path:none!important;filter:none!important}
+.plvShowroomScene .realPhoneLive{width:205px;height:430px;flex:0 0 auto}
+.socialShowroomScene .socialPhoneCrop{height:92%!important;max-width:none!important;width:auto!important;aspect-ratio:625/1310!important}
+.socialShowroomScene .socialPhoneCrop>img{height:100%!important;width:auto!important;max-width:none!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important}
+@media(max-width:700px){
+ .plvShowroomScene .socialPhoneCrop{height:76%!important;max-width:38%!important}
+ .plvShowroomScene .realPhoneLive{width:150px;height:315px}
+ .socialShowroomScene .socialPhoneCrop{height:88%!important}
+}
