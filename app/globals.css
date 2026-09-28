@@ -326,3 +326,23 @@
  .socialShowroomScene{padding-left:4%}
  .socialShowroomScene>img{height:88%!important;max-width:68%!important}
 }
+
+
+/* Homepage social proof: crop the source capture to the Facebook phone itself, no black canvas */
+.socialShowroomScene{overflow:hidden}
+.socialShowroomScene>img{height:auto!important;width:62%!important;max-width:none!important;clip-path:inset(4.5% 19.5% 4.5% 19.5% round 32px);transform:scale(1.55);filter:drop-shadow(0 28px 55px #0007)!important}
+
+/* Loyalty proof inspired by the real Cycles Omega Apple Wallet capture */
+.walletCaptureScene{background:#f4f3f8!important;display:flex;align-items:center;justify-content:center}
+.walletCapture{width:315px;height:535px;background:#f4f3f8;border-radius:38px;padding:15px 13px 18px;box-shadow:0 28px 65px #1113;position:relative;overflow:hidden;color:#151515}
+.walletCaptureStatus{font-size:15px;font-weight:800;padding:0 12px 10px;display:flex;justify-content:space-between}
+.walletCaptureNotification{position:absolute;z-index:3;left:7px;right:7px;top:43px;background:#f8f8fbeb;backdrop-filter:blur(14px);border:1px solid #ddd;border-radius:23px;padding:10px 12px;display:grid;grid-template-columns:34px 1fr auto;gap:8px;box-shadow:0 8px 20px #0002}
+.walletCaptureNotification .walletCaptureLogo{width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid #ddd;display:grid;place-items:center;font-weight:900}
+.walletCaptureNotification b{font-size:12px}.walletCaptureNotification p{font-size:10px;line-height:1.25;margin:1px 0 0}.walletCaptureNotification small{font-size:9px;color:#777}
+.walletCaptureCard{height:405px;margin-top:2px;border-radius:20px;overflow:hidden;position:relative;background-image:linear-gradient(0deg,#1b120bcc 0%,#1b120b00 47%),url("https://rzryxngvgmhlqbrstxrq.supabase.co/storage/v1/object/public/storefront-assets/4d09c2c4-d399-4385-900c-5df9e2ee302b/hero-1790192567023.webp");background-size:cover;background-position:center;box-shadow:0 10px 22px #0003}
+.walletCaptureBrand{position:absolute;top:18px;left:17px;font-size:8px;line-height:.85;font-weight:900}
+.walletCaptureQr{position:absolute;left:50%;top:51%;transform:translate(-50%,-50%);width:112px;height:112px;background:#fff;border-radius:7px;display:grid;place-items:center;font-size:94px;line-height:1}
+.walletCaptureQr small{position:absolute;bottom:5px;font-size:8px;background:#fff;line-height:1}
+.walletCaptureBottom{position:absolute;left:16px;right:16px;bottom:22px;color:#fff;display:flex;justify-content:space-between;font-family:monospace;font-size:10px}.walletCaptureBottom span:last-child{text-align:right}.walletCaptureBottom b{font-size:14px;font-weight:500}
+.walletCaptureActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.walletCaptureActions div{height:78px;background:#fff;border-radius:18px;padding:10px;display:flex;flex-direction:column;gap:8px;font-size:17px}.walletCaptureActions b{font-size:9px;line-height:1.15}
+@media(max-width:700px){.socialShowroomScene>img{width:82%!important;transform:scale(1.45)}.walletCapture{transform:scale(.88)}}
