@@ -499,3 +499,12 @@
 .editorPromoBlock{min-height:420px}
 .designRail textarea{width:100%;min-height:90px;resize:vertical;border:1px solid #d8ddd9;border-radius:9px;padding:10px;font:inherit}
 @media(max-width:650px){.storePromoBlock{min-height:420px;padding:28px 22px}.storePromoBlock h2{font-size:42px}.storePromoBlock p{font-size:17px}}
+
+/* Storefront editor: global design above, configuration aligned beside preview */
+.visualEditor.alignedEditor{grid-template-columns:300px minmax(600px,1fr);align-items:start}
+.globalDesignBar{grid-column:1/-1;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;display:grid;grid-template-columns:1.35fr repeat(6,minmax(105px,1fr));gap:12px;align-items:end}
+.globalDesignBar>div{align-self:center}.globalDesignBar small{font-size:9px;letter-spacing:1.5px;color:#299d77;font-weight:800}.globalDesignBar h2{font-size:18px;margin:4px 0 0}.globalDesignBar label{display:grid;gap:5px;min-width:0}.globalDesignBar label span{font-size:9px;font-weight:800;color:#68716c}.globalDesignBar input,.globalDesignBar select{width:100%;height:38px;border:1px solid var(--line);border-radius:7px;padding:7px;background:#fff}.globalDesignBar input[type=color]{padding:4px}
+.alignedRail{position:relative!important;top:auto!important;align-self:stretch}
+.alignedRail .railSectionTitle:first-child{color:#299d77}
+@media(max-width:1050px){.globalDesignBar{grid-template-columns:repeat(3,1fr)}.globalDesignBar>div{grid-column:1/-1}}
+@media(max-width:760px){.visualEditor.alignedEditor{display:block}.globalDesignBar{display:grid;grid-template-columns:1fr 1fr;margin-bottom:14px}.globalDesignBar>div{grid-column:1/-1}.alignedRail{margin-bottom:14px}}
