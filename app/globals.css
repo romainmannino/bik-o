@@ -466,6 +466,9 @@
 .brandTrack{display:flex!important;width:max-content!important;align-items:center;gap:56px!important;animation:bikeoBrandMarquee 24s linear infinite}
 .brandTrack span{flex:0 0 auto!important;min-width:150px!important;display:grid!important;place-items:center}
 .brandTrack img{max-width:145px!important;max-height:62px!important;object-fit:contain}
+.premiumBrands.singleBrand .brandMarquee{mask-image:none}
+.premiumBrands.singleBrand .brandTrack{width:100%!important;justify-content:center;animation:none!important;transform:none!important}
+.premiumBrands.singleBrand .brandTrack span{min-width:0!important}
 @keyframes bikeoBrandMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .featuredRail{display:flex!important;grid-template-columns:none!important;overflow-x:auto!important;scroll-snap-type:x proximity;gap:14px!important;padding-bottom:10px;scrollbar-width:thin}
 .featuredRail .featuredBike,.featuredRail>article{flex:0 0 clamp(230px,27vw,340px)!important;scroll-snap-align:start}
