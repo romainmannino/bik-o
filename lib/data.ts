@@ -8,3 +8,6 @@ export async function getProductForStore(storeSlug:string,productSlug:string){co
 export async function getStoreStats(storeSlug="cycles-omega"){const products:any[]=await getCatalog(storeSlug);const variants=products.flatMap(p=>p.product_variants??[]);const inventory=variants.flatMap(v=>v.inventory??[]);return{products:products.length,inStock:inventory.filter(i=>i.public_status==="in_stock"&&i.quantity>0).reduce((n:number,i:any)=>n+i.quantity,0),orderable:inventory.filter(i=>i.public_status==="orderable").length,lastSync:inventory.map(i=>i.last_synced_at).filter(Boolean).sort().at(-1)??null}}
 
 export async function getStoreBrands(storeSlug="cycles-omega"){const supabase=await createClient();const store=await getStore(storeSlug);const {data,error}=await supabase.from("store_brands").select("is_featured,logo_override_url,brands(id,name,slug,logo_url,website_url)").eq("store_id",store.id);if(error)throw error;return (data??[]).map((x:any)=>({...x.brands,logo_url:x.logo_override_url||x.brands?.logo_url,is_featured:x.is_featured})).filter(Boolean)}
+
+
+export async function getStoreLoyaltyIntegration(storeId:string){const supabase=await createClient();const {data}=await supabase.from("store_loyalty_integrations").select("external_slug,status").eq("store_id",storeId).maybeSingle();return data??null}
