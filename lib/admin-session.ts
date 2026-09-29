@@ -1,0 +1,1 @@
+import{cookies}from"next/headers";import{createHash}from"crypto";export async function isAdminSession(){const p=process.env.BIKEO_ADMIN_PASSWORD;if(!p)return false;const expected=createHash("sha256").update(p+":bikeo-admin-v1").digest("hex");return (await cookies()).get("bikeo_admin")?.value===expected}
