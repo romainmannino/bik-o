@@ -23,7 +23,7 @@ export default async function Home() {
   return (
     <main className="networkHome">
       <section className="hero networkHero">
-        <nav><Brand/><div className="networkNav"><a href="#solution">La solution</a><a href="#independant">Le réseau</a><a className="networkLogin" href="/login">Espace partenaire</a></div></nav>
+        <nav><Brand/><div className="networkNav"><a href="#solution">La solution</a><a href="#independant">Le réseau</a><a className="networkLogin" href="/connexion">Espace partenaire</a></div></nav>
         <div className="heroCopy networkHeroCopy">
           <p className="eyebrow">LA CENTRALE DIGITALE DES MAGASINS VÉLO INDÉPENDANTS</p>
           <h1>La puissance digitale d'un réseau.<br/><em>La liberté d'un indépendant.</em></h1>
@@ -103,7 +103,7 @@ export default async function Home() {
         <div className="networkReturnCard"><span>EXEMPLE À MESURER DANS VOTRE MAGASIN</span><strong>3</strong><b>ventes vélo additionnelles / an</b><p>Avec un vélo moyen à 5 000 € et 25 % de marge brute, trois ventes représentent 3 750 € de marge brute. Un ordre de grandeur qui permet de comparer simplement l'investissement Bikéo à sa valeur potentielle.</p></div>
       </section>
 
-      <section className="promise networkPromise"><p>BIKÉO PARTENAIRE</p><h2>Restez indépendant.<br/>Ne restez plus seul face au digital.</h2><div><strong>Une solution pensée exclusivement pour le commerce vélo.</strong><span>Nous privilégions un réseau de partenaires engagés plutôt qu'un logiciel généraliste en libre-service. Configuration, outils métier et accompagnement sont pensés autour du quotidien du vélociste.</span></div><a className="networkCta" href="/login">Accéder à mon espace partenaire →</a></section>
+      <section className="promise networkPromise"><p>BIKÉO PARTENAIRE</p><h2>Restez indépendant.<br/>Ne restez plus seul face au digital.</h2><div><strong>Une solution pensée exclusivement pour le commerce vélo.</strong><span>Nous privilégions un réseau de partenaires engagés plutôt qu'un logiciel généraliste en libre-service. Configuration, outils métier et accompagnement sont pensés autour du quotidien du vélociste.</span></div><a className="networkCta" href="/connexion">Accéder à mon espace partenaire →</a></section>
       <footer><Brand/><p>La centrale digitale des magasins vélo indépendants.</p></footer>
     </main>
   );
