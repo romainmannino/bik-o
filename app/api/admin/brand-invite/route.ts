@@ -1,0 +1,2 @@
+import{NextResponse}from"next/server";import{isAdminSession}from"@/lib/admin-session";import{createClient}from"@/lib/supabase/server";
+export async function POST(req:Request){if(!await isAdminSession())return NextResponse.json({error:"Accès admin requis"},{status:403});const{brandId}=await req.json();const s=await createClient();const{data,error}=await s.from("brand_invites").insert({brand_id:brandId}).select("token,expires_at").single();if(error)return NextResponse.json({error:error.message},{status:400});return NextResponse.json(data)}
