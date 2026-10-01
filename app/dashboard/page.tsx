@@ -26,7 +26,7 @@ export default async function Dashboard(){
  const cards=[
   {icon:"▣",eyebrow:"MON SITE",title:store.is_published?"En ligne":"Pré-configuré",detail:store.is_published?"Ton site est visible par tes clients.":"Ton site Bikéo est prêt à être publié.",action:store.is_published?"Voir mon site →":"Mettre en ligne →",href:store.is_published?("/magasin/"+store.slug):"/dashboard/site"},
   {icon:"◎",eyebrow:"RÉSEAUX SOCIAUX",title:socialCount+" post"+(socialCount>1?"s":"")+" disponible"+(socialCount>1?"s":""),detail:"Contenus de tes marques disponibles dans la marketplace.",action:"+ Ajouter une photo →",href:"/dashboard/reseaux-sociaux?add=photo"},
-  {icon:"♡",eyebrow:"PROGRAMME FIDÉLITÉ",title:loyaltyActive?"Actif · 5 %":"Pré-configuré · 5 %",detail:"Cagnotte fidélité Bikéo propulsée par Digifyd.",action:"Scanner une carte fidélité →",href:"/dashboard/fidelite?action=scan"},
+  {icon:"♡",eyebrow:"PROGRAMME FIDÉLITÉ",title:loyaltyActive?"Votre Wallet Apple & Google est actif":"Votre Wallet Apple & Google",detail:loyaltyActive?"Carte de fidélité digitale active pour vos clients.":"Votre programme de fidélité digital est prêt à être activé.",action:"Scanner une carte fidélité →",href:"/dashboard/fidelite?action=scan"},
   {icon:"⌁",eyebrow:"PLV & QR",title:qrs.length+" affiches",detail:pending+" à configurer"+(configured?" · "+configured+" configurée"+(configured>1?"s":""):""),action:"Scanner une affiche PLV →",href:"/dashboard/plv?scan=1#qr-config"}
  ];
  return <><header className="dashHeader"><div><p className="dashEyebrow">BIENVENUE CHEZ BIKÉO</p><h1>Bonjour {store.name}.</h1><p>Voilà les outils Bikéo actifs aujourd'hui dans ton magasin.</p></div></header>
