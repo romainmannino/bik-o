@@ -628,3 +628,22 @@
 .brandFacebookSettings .facebookUrlInput{height:40px!important;min-height:40px!important;max-height:none!important;line-height:20px!important}
 .brandMetrics{display:flex!important;gap:12px!important;align-items:center!important;color:#11a875!important;font-weight:700!important}
 .brandMetrics span+span{padding-left:12px;border-left:1px solid #dfe5e2}
+
+/* Merchant dashboard — Bikéo tool cards */
+.toolOverview{margin:0 0 28px}
+.toolGrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.toolCard{position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:270px;background:#fff;border:1px solid #dde3df;border-radius:20px;box-shadow:0 8px 28px rgba(18,28,23,.045);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.toolCard:before{content:"";position:absolute;inset:0 0 auto;height:4px;background:#52d5ad;opacity:.9}
+.toolCard:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(18,28,23,.09);border-color:#cdd9d2}
+.toolCardTop{display:grid;grid-template-columns:44px 1fr 24px;align-items:center;gap:12px;padding:24px 24px 15px}
+.toolIcon{width:44px;height:44px;display:grid;place-items:center;border-radius:13px;background:#eefaf6;color:#149b75;font-size:22px;font-weight:800}
+.toolCardTop small{font-size:11px;letter-spacing:.12em;font-weight:850;color:#159b75}
+.toolStatus{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#e9f8f2;color:#159b75;font-size:12px;font-weight:900}
+.toolCardBody{padding:5px 24px 24px}
+.toolCardBody strong{display:block;font-size:29px;line-height:1.02;letter-spacing:-.045em;color:#171a19;margin-bottom:12px}
+.toolCardBody p{margin:0;color:#69716d;font-size:14px;line-height:1.48}
+.toolCardAction{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 24px;background:#fafcfb;border-top:1px solid #e7ebe8;color:#171a19;text-decoration:none;font-size:14px;font-weight:800;transition:background .18s ease}
+.toolCardAction b{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#171a19;color:#fff;font-size:15px;transition:transform .18s ease}
+.toolCard:hover .toolCardAction{background:#f3faf7}.toolCard:hover .toolCardAction b{transform:translateX(2px)}
+@media(max-width:1100px){.toolGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.toolGrid{grid-template-columns:1fr}.toolCard{min-height:230px}}
