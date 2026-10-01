@@ -30,12 +30,11 @@ export default async function Dashboard(){
   {icon:"⌁",eyebrow:"PLV & QR",title:qrs.length+" affiches",detail:pending+" à configurer"+(configured?" · "+configured+" configurée"+(configured>1?"s":""):""),action:"Scanner une affiche PLV →",href:"/dashboard/plv?scan=1#qr-config"}
  ];
  return <><header className="dashHeader"><div><p className="dashEyebrow">BIENVENUE CHEZ BIKÉO</p><h1>Bonjour {store.name}.</h1><p>Voilà les outils Bikéo actifs aujourd'hui dans ton magasin.</p></div></header>
- <section style={{margin:"0 0 26px"}}><div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:14}}>
- {cards.map(x=><article className="statCard" key={x.eyebrow} style={{display:"flex",flexDirection:"column",minHeight:235,padding:24}}>
-   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}><small style={{letterSpacing:".11em",fontWeight:800,color:"#159b75"}}>{x.eyebrow}</small><span style={{fontSize:25}}>{x.icon}</span></div>
-   <strong style={{fontSize:28,lineHeight:1.08,marginBottom:10}}>{x.title}</strong>
-   <p style={{color:"#68706b",fontSize:14,lineHeight:1.45,margin:"0 0 22px"}}>{x.detail}</p>
-   <Link href={x.href} style={{marginTop:"auto",fontWeight:800,color:"#171a19",textDecoration:"none",borderTop:"1px solid #e5e9e6",paddingTop:16}}>{x.action}</Link>
+ <section className="toolOverview"><div className="toolGrid">
+ {cards.map((x,i)=><article className={"toolCard toolCard"+i} key={x.eyebrow}>
+   <div className="toolCardTop"><span className="toolIcon">{x.icon}</span><small>{x.eyebrow}</small><span className="toolStatus">✓</span></div>
+   <div className="toolCardBody"><strong>{x.title}</strong><p>{x.detail}</p></div>
+   <Link href={x.href} className="toolCardAction"><span>{x.action.replace(" →","")}</span><b>→</b></Link>
  </article>)}
  </div></section>
  <section className="dashColumns dashboardSingleAction"><div className="panel darkPanel"><small>CONSEILLER</small><h2>Un client est devant toi ?</h2><p>L'Advisor utilise ton catalogue et ton stock pour orienter le client vers le bon vélo.</p><a href="/conseiller">Conseiller un client →</a></div></section></>
