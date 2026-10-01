@@ -660,3 +660,13 @@
 .qrIntroWrap .qrIntro{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important;align-items:stretch!important;height:auto!important;margin:0!important}
 .qrIntro .qrStatCard{min-height:210px!important;height:100%!important;box-sizing:border-box!important}
 @media(max-width:900px){.qrIntroWrap{grid-template-columns:100px minmax(0,1fr)!important;gap:14px!important}.merchantRealPlv{width:100px!important;max-height:190px!important}.merchantRealPlvBase{max-height:190px!important}.qrIntroWrap .qrIntro{grid-template-columns:1fr!important}}
+
+/* Merchant PLV workspace v35 */
+.plvWorkspaceTop{display:grid;grid-template-columns:150px minmax(0,1fr);gap:22px;align-items:stretch;margin-bottom:22px}
+.plvWorkspacePreview{display:flex;align-items:flex-start;justify-content:center}
+.plvWorkspacePreview .merchantRealPlv{width:150px!important;height:auto!important;max-height:none!important;align-self:flex-start!important}
+.plvWorkspacePreview .merchantRealPlvBase{width:100%!important;height:auto!important;max-height:none!important}
+.plvWorkspaceContent{min-width:0;display:grid;gap:20px}
+.plvWorkspaceContent .qrIntro{margin:0!important}
+.plvWorkspaceContent #qr-config>.merchantQrConfig{margin-bottom:0!important}
+@media(max-width:900px){.plvWorkspaceTop{grid-template-columns:1fr}.plvWorkspacePreview{justify-content:flex-start}.plvWorkspacePreview .merchantRealPlv{width:105px!important}.plvWorkspaceContent .qrIntro{grid-template-columns:1fr!important}}
