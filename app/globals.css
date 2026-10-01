@@ -652,3 +652,11 @@
 .catalogueYearBlock>div:first-child{display:flex;flex-direction:column;gap:4px}.catalogueYearBlock small{font-size:10px;font-weight:850;letter-spacing:.12em;color:#159b75}.catalogueYearBlock strong{font-size:16px}
 .catalogueYearChoices{display:flex;gap:8px;flex-wrap:wrap}.catalogueYearChoices button{border:1px solid #dce3df;background:#f8faf9;border-radius:999px;padding:9px 13px;font:inherit;font-size:13px;font-weight:750;color:#515a55;cursor:pointer}.catalogueYearChoices button span{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-left:6px;padding:0 6px;border-radius:999px;background:#e9eeeb;font-size:11px}.catalogueYearChoices button.active{background:#171a19;color:#fff;border-color:#171a19}.catalogueYearChoices button.active span{background:#52d5ad;color:#102019}
 @media(max-width:700px){.catalogueYearBlock{align-items:flex-start;flex-direction:column}.catalogueYearChoices{width:100%}}
+
+/* Merchant PLV layout v34 — preview and counters share one clean row */
+.qrIntroWrap{display:grid!important;grid-template-columns:150px minmax(0,1fr)!important;gap:22px!important;align-items:stretch!important;margin-bottom:22px!important}
+.merchantRealPlv{width:150px!important;height:100%!important;max-height:240px!important;align-self:stretch!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important}
+.merchantRealPlvBase{width:100%!important;height:100%!important;max-height:240px!important;object-fit:contain!important}
+.qrIntroWrap .qrIntro{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important;align-items:stretch!important;height:auto!important;margin:0!important}
+.qrIntro .qrStatCard{min-height:210px!important;height:100%!important;box-sizing:border-box!important}
+@media(max-width:900px){.qrIntroWrap{grid-template-columns:100px minmax(0,1fr)!important;gap:14px!important}.merchantRealPlv{width:100px!important;max-height:190px!important}.merchantRealPlvBase{max-height:190px!important}.qrIntroWrap .qrIntro{grid-template-columns:1fr!important}}
