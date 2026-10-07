@@ -472,7 +472,7 @@
 @keyframes bikeoBrandMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .featuredRail{display:flex!important;grid-template-columns:none!important;overflow-x:auto!important;scroll-snap-type:x proximity;gap:14px!important;padding-bottom:10px;scrollbar-width:thin}
 .featuredRail .featuredBike,.featuredRail>article{flex:0 0 clamp(230px,27vw,340px)!important;scroll-snap-align:start}
-.bikeVisual{position:relative}.discountBadge{position:absolute;right:10px;top:10px;background:#171a19;color:#fff;border-radius:99px;padding:7px 9px;font-size:11px;font-style:normal;font-weight:900}
+.bikeVisual{position:relative}.discountBadge,.newBadge{position:absolute;right:10px;top:10px;color:#fff;border-radius:99px;padding:7px 9px;font-size:11px;font-style:normal;font-weight:900}.discountBadge{background:#171a19}.newBadge{background:var(--accent,#55d6aa);letter-spacing:.35px}
 .salePrice{display:flex;align-items:baseline;gap:9px}.salePrice s{color:#8b928e;font-size:12px}.salePrice strong{color:#171a19}
 .stockDisclaimer{display:block;margin-top:7px;color:#777;font-size:9px;font-weight:400;line-height:1.35}
 .featuredSettings{display:grid;gap:10px}.featuredSettings>small{font-size:9px;letter-spacing:1.3px;color:#299d77;font-weight:800}.featuredSetting{border:1px solid var(--line);border-radius:9px;padding:11px;display:grid;gap:9px}.featuredSetting>b{font-size:12px}.inlineCheck{display:flex!important;align-items:center;gap:7px}.inlineCheck input{width:auto!important}.inlineCheck span{font-size:10px!important}
