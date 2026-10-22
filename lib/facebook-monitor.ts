@@ -1,7 +1,11 @@
 // Veille Facebook des marques via Bright Data (dataset « Pages Posts by Profile URL »).
 // Utilisé par le cron quotidien et par le bouton « Vérifier » de l'admin.
 
+import { createAdminClient } from "@/lib/supabase/admin";
+import { rehostImages, linkPreviewImage, isHosted, isFacebookCdn } from "@/lib/social-media";
+
 export const DATASET = "gd_lkaxegm826bjpoo9m5";
+export const POST_DATASET = "gd_lyclm1571iy3mv57zw"; // un post Facebook par URL
 const BD = "https://api.brightdata.com/datasets/v3";
 
 export const fmt = (d: Date) =>
@@ -207,11 +211,17 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
         continue;
       }
       const caption = dedupe(String(row.content || ""));
-      const media = mediaUrls(row);
+      let media = mediaUrls(row);
+      if (media.length === 0 && caption) {
+        const preview = await linkPreviewImage(caption);
+        if (preview) media = [preview];
+      }
       if (!caption && media.length === 0) {
         empty++;
         continue;
       }
+      // Copie durable des images (les liens Facebook expirent sous ~6 jours).
+      media = (await rehostImages(media, `social/${brandId}/${postId}`)).urls;
       const { error } = await s.rpc("admin_create_brand_social_content_pending", {
         p_brand_id: brandId,
         p_title: row.user_username_raw || row.page_name || "Actualité marque",
@@ -230,7 +240,9 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
       knownIds.add(postId);
       if (sourceUrl) knownUrls.add(sourceUrl);
     }
-    const diagnostic = { ...scraped.debug, invalid, duplicates, outside, empty, createErrors };
+    // Répare les contenus déjà importés dont les images sont restées sur Facebook ou manquent.
+    const refreshed = Date.now() + 30000 < deadline ? await refreshStoredMedia(existing || [], brandId, deadline) : null;
+    const diagnostic = { ...scraped.debug, invalid, duplicates, outside, empty, createErrors, refreshed };
 
     if (posts.length === 0) {
       const reason = errorRows.length
@@ -251,4 +263,49 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
   } catch (e: any) {
     return fail(e?.message || "Vérification impossible");
   }
+}
+
+// Contenus Facebook encore actifs (à valider ou disponibles) dont les visuels ne sont pas copiés
+// dans Supabase : on copie les images encore valides, sinon on relit le post chez Bright Data.
+export async function refreshStoredMedia(existing: any[], brandId: string, deadline: number) {
+  const admin = createAdminClient();
+  if (!admin) return { skipped: "clé service Supabase absente" };
+  const todo = existing
+    .filter((x) => x.brand_id === brandId && x.source_network === "facebook" && ["pending", "available"].includes(x.status))
+    .filter((x) => {
+      const media: string[] = Array.isArray(x.media_urls) ? x.media_urls : [];
+      return media.length === 0 || media.some((u) => typeof u === "string" && !isHosted(u) && isFacebookCdn(u));
+    })
+    .slice(0, 8);
+  let fixed = 0, rescraped = 0, unchanged = 0;
+  for (const item of todo) {
+    if (Date.now() + 20000 > deadline) break;
+    const before: string[] = (Array.isArray(item.media_urls) ? item.media_urls : []).filter((u: any) => typeof u === "string");
+    const folder = `social/${brandId}/${item.external_post_id || item.id}`;
+    let media = before.length ? (await rehostImages(before, folder)).urls : [];
+    const allHosted = media.length > 0 && media.length === before.length && media.every(isHosted);
+    if (!allHosted && before.some(isFacebookCdn) && item.source_url && Date.now() + 90000 < deadline) {
+      // Liens expirés : on relit le post pour obtenir des liens frais.
+      try {
+        const { rows } = await scrapeDataset(POST_DATASET, [{ url: item.source_url }], Math.min(deadline - 20000, Date.now() + 90000));
+        const row = rows.find((r: any) => r && !r.error);
+        if (row) {
+          rescraped++;
+          const fresh = mediaUrls(row);
+          if (fresh.length) media = (await rehostImages(fresh, folder)).urls;
+        }
+      } catch {}
+    }
+    if (media.length === 0 && item.original_caption) {
+      const preview = await linkPreviewImage(String(item.original_caption));
+      if (preview) media = (await rehostImages([preview], folder)).urls;
+    }
+    if (JSON.stringify(media) === JSON.stringify(before)) {
+      unchanged++;
+      continue;
+    }
+    const { error } = await admin.from("brand_social_contents").update({ media_urls: media }).eq("id", item.id);
+    if (!error) fixed++;
+  }
+  return { candidates: todo.length, fixed, rescraped, unchanged };
 }
