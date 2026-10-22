@@ -1,3 +1,27 @@
-import{NextResponse}from"next/server";import{createClient}from"@/lib/supabase/server";import{isAdminSession}from"@/lib/admin-session";
-export const runtime="nodejs";import{fmt,iso,addDays,dedupe,scrape,mediaUrls,dateInWindow}from"@/lib/facebook-monitor";
-export async function POST(req:Request){if(!await isAdminSession())return NextResponse.json({error:"Non autorisé"},{status:401});const s=await createClient();let b:any={};try{b=await req.json()}catch{};const brandId=String(b.brandId||"");if(!brandId)return NextResponse.json({error:"Marque manquante"},{status:400});const{data:m,error:me}=await s.rpc("admin_list_brand_social_monitors");if(me)return NextResponse.json({error:me.message},{status:500});const mon=(m||[]).find((x:any)=>x.brand_id===brandId);if(!mon?.facebook_page_url)return NextResponse.json({error:"URL Facebook manquante"},{status:400});const now=new Date(),yesterday=addDays(now,-1),windowEnd=iso(yesterday);const windowStartDate=addDays(yesterday,-3);const start=fmt(windowStartDate),end=fmt(yesterday);try{const scraped=await scrape(mon.facebook_page_url,start,end);const rows=scraped.rows;let imported=0,duplicates=0,invalid=0,createErrors:string[]=[];for(const row of rows){if(row?.error||!row?.post_id||!dateInWindow(row,windowStartDate,addDays(yesterday,1))){invalid++;continue;}const sourceUrl=String(row.url||"");const{data:existing}=await s.rpc("admin_list_brand_social_content");if((existing||[]).some((x:any)=>x.external_post_id===String(row.post_id)||x.source_url===sourceUrl)){duplicates++;continue;}const media=mediaUrls(row);const caption=dedupe(String(row.content||""));const{error}=await s.rpc("admin_create_brand_social_content_pending",{p_brand_id:brandId,p_title:row.user_username_raw||row.page_name||"Actualité marque",p_caption:caption,p_media_urls:media,p_source_network:"facebook",p_source_url:sourceUrl,p_external_post_id:String(row.post_id),p_published_at:row.date_posted||null});if(!error)imported++;else createErrors.push(error.message)}if(rows.length===0){const message="Bright Data n’a retourné aucune publication sur la période débutant le "+start+" ; cette journée reste à recontrôler.";await s.rpc("admin_mark_brand_social_monitor",{p_brand_id:brandId,p_error:message,p_imported:0});return NextResponse.json({ok:false,error:message,checked:{start,end},records:0,imported:0,diagnostic:{...scraped.debug,invalid,duplicates,createErrors}},{status:502})}if(createErrors.length){const message="Import incomplet : "+createErrors.join(" | ");await s.rpc("admin_mark_brand_social_monitor",{p_brand_id:brandId,p_error:message,p_imported:imported});return NextResponse.json({ok:false,error:message,checked:{start,end},records:rows.length,imported,diagnostic:{...scraped.debug,invalid,duplicates,createErrors}},{status:500})}await s.rpc("admin_mark_brand_social_monitor_window",{p_brand_id:brandId,p_error:null,p_imported:imported,p_window_end:windowEnd});return NextResponse.json({ok:true,checked:{start,end},records:rows.length,imported,diagnostic:{...scraped.debug,invalid,duplicates,createErrors}})}catch(e:any){const message=e?.message||"Vérification impossible";await s.rpc("admin_mark_brand_social_monitor",{p_brand_id:brandId,p_error:message,p_imported:0});return NextResponse.json({error:message},{status:500})}}
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { isAdminSession } from "@/lib/admin-session";
+import { runMonitor } from "@/lib/facebook-monitor";
+
+export const runtime = "nodejs";
+// Une collecte Bright Data dépasse souvent la minute : on laisse le temps d'attendre le snapshot.
+export const maxDuration = 300;
+
+export async function POST(req: Request) {
+  if (!(await isAdminSession())) return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const deadline = Date.now() + 280000;
+  const s = await createClient();
+  let b: any = {};
+  try {
+    b = await req.json();
+  } catch {}
+  const brandId = String(b.brandId || "");
+  if (!brandId) return NextResponse.json({ error: "Marque manquante" }, { status: 400 });
+  const { data: m, error: me } = await s.rpc("admin_list_brand_social_monitors");
+  if (me) return NextResponse.json({ error: me.message }, { status: 500 });
+  const mon = (m || []).find((x: any) => x.brand_id === brandId);
+  if (!mon?.facebook_page_url) return NextResponse.json({ error: "URL Facebook manquante" }, { status: 400 });
+  const result = await runMonitor(s, brandId, mon.facebook_page_url, deadline);
+  const status = result.ok ? 200 : result.noRecords ? 502 : 500;
+  return NextResponse.json(result, { status });
+}

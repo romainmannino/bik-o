@@ -1,4 +1,33 @@
-import{NextResponse}from"next/server";import{createClient}from"@/lib/supabase/server";
-export const runtime="nodejs";export const maxDuration=300;
-import{fmt,iso,addDays,dedupe,scrape,mediaUrls,dateInWindow}from"@/lib/facebook-monitor";
-export async function GET(req:Request){const secret=process.env.CRON_SECRET;if(secret&&req.headers.get("authorization")!=="Bearer "+secret)return NextResponse.json({error:"Non autorisé"},{status:401});const s=await createClient();const{data:monitors,error}=await s.rpc("cron_list_enabled_brand_social_monitors");if(error)return NextResponse.json({error:error.message},{status:500});const yesterday=addDays(new Date(),-1),windowEnd=iso(yesterday),windowStart=addDays(yesterday,-3),start=fmt(windowStart),end=fmt(yesterday),summary:any[]=[];for(const mon of monitors||[]){try{const scraped=await scrape(mon.facebook_page_url,start,end);const rows=scraped.rows;const windowStartDate=windowStart;const{data:existing}=await s.rpc("admin_list_brand_social_content");let imported=0,duplicates=0,invalid=0;const createErrors:string[]=[];for(const row of rows){if(row?.error||!row?.post_id||!dateInWindow(row,windowStartDate,addDays(yesterday,1))){invalid++;continue}const sourceUrl=String(row.url||"");if((existing||[]).some((x:any)=>x.external_post_id===String(row.post_id)||x.source_url===sourceUrl)){duplicates++;continue}const media=mediaUrls(row);const{error:createError}=await s.rpc("admin_create_brand_social_content_pending",{p_brand_id:mon.brand_id,p_title:row.user_username_raw||row.page_name||"Actualité marque",p_caption:dedupe(String(row.content||"")),p_media_urls:media,p_source_network:"facebook",p_source_url:sourceUrl,p_external_post_id:String(row.post_id),p_published_at:row.date_posted||null});if(createError)createErrors.push(createError.message);else imported++}if(rows.length===0){const message="Bright Data n’a retourné aucune publication sur la période débutant le "+start+" ; journée non validée.";await s.rpc("admin_mark_brand_social_monitor",{p_brand_id:mon.brand_id,p_error:message,p_imported:0});summary.push({brandId:mon.brand_id,error:message,records:0});continue}if(createErrors.length){const message="Import incomplet : "+createErrors.join(" | ");await s.rpc("admin_mark_brand_social_monitor",{p_brand_id:mon.brand_id,p_error:message,p_imported:imported});summary.push({brandId:mon.brand_id,error:message,records:rows.length,imported,duplicates,invalid});continue}await s.rpc("admin_mark_brand_social_monitor_window",{p_brand_id:mon.brand_id,p_error:null,p_imported:imported,p_window_end:windowEnd});summary.push({brandId:mon.brand_id,checked:{start,end},records:rows.length,imported,duplicates,invalid})}catch(e:any){const message=e?.message||"Vérification impossible";await s.rpc("admin_mark_brand_social_monitor",{p_brand_id:mon.brand_id,p_error:message,p_imported:0});summary.push({brandId:mon.brand_id,error:message})}}return NextResponse.json({ok:true,date:windowEnd,brands:summary.length,summary})}
+import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { iso, addDays, runMonitor } from "@/lib/facebook-monitor";
+
+export const runtime = "nodejs";
+export const maxDuration = 300;
+
+export async function GET(req: Request) {
+  const secret = process.env.CRON_SECRET;
+  if (secret && req.headers.get("authorization") !== "Bearer " + secret)
+    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  const startedAt = Date.now();
+  // Garde ~20 s de marge sous maxDuration pour enregistrer les résultats.
+  const deadline = startedAt + 280000;
+  const s = await createClient();
+  const { data: monitors, error } = await s.rpc("cron_list_enabled_brand_social_monitors");
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  // Les marques sont collectées en parallèle : chacune peut attendre son snapshot Bright Data.
+  const summary = await Promise.all(
+    (monitors || []).map(async (mon: any) => ({
+      brandId: mon.brand_id,
+      ...(await runMonitor(s, mon.brand_id, mon.facebook_page_url, deadline)),
+    })),
+  );
+  return NextResponse.json({
+    ok: true,
+    date: iso(addDays(new Date(), -1)),
+    brands: summary.length,
+    failed: summary.filter((x) => !x.ok).length,
+    durationMs: Date.now() - startedAt,
+    summary,
+  });
+}
