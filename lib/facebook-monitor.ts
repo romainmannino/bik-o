@@ -278,6 +278,7 @@ export async function refreshStoredMedia(existing: any[], brandId: string, deadl
     })
     .slice(0, 8);
   let fixed = 0, rescraped = 0, unchanged = 0;
+  const errors: string[] = [];
   for (const item of todo) {
     if (Date.now() + 20000 > deadline) break;
     const before: string[] = (Array.isArray(item.media_urls) ? item.media_urls : []).filter((u: any) => typeof u === "string");
@@ -305,7 +306,8 @@ export async function refreshStoredMedia(existing: any[], brandId: string, deadl
       continue;
     }
     const { error } = await admin.from("brand_social_contents").update({ media_urls: media }).eq("id", item.id);
-    if (!error) fixed++;
+    if (error) errors.push(error.message);
+    else fixed++;
   }
-  return { candidates: todo.length, fixed, rescraped, unchanged };
+  return { candidates: todo.length, fixed, rescraped, unchanged, errors };
 }
