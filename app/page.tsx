@@ -1,4 +1,5 @@
 import PartnerDiagnostic from "../components/PartnerDiagnostic";
+import LandingFilm from "../components/LandingFilm";
 import {createClient} from "../lib/supabase/server";
 
 const pillars = [
@@ -28,9 +29,18 @@ export default async function Home() {
           <p className="eyebrow">LA CENTRALE DIGITALE DES MAGASINS VÉLO INDÉPENDANTS</p>
           <h1>La puissance digitale d'un réseau.<br/><em>La liberté d'un indépendant.</em></h1>
           <p className="lead">Bikéo donne aux magasins vélo indépendants une infrastructure digitale complète : site & catalogue, PLV intelligente, communication sociale et fidélité Wallet — sans changer d'enseigne, de marques ni de façon de travailler.</p>
-          <div className="actions"><a href="#solution">Découvrir Bikéo</a><span>Une plateforme. Votre identité. Des moyens mutualisés.</span></div>
+          <div className="actions"><a href="#solution">Découvrir Bikéo</a><a className="filmLink" href="#film">▶ Voir le film · 1 min</a><span>Une plateforme. Votre identité. Des moyens mutualisés.</span></div>
         </div>
         <div className="networkProof"><span>01<br/><b>VISIBLE</b></span><span>02<br/><b>COMMUNIQUER</b></span><span>03<br/><b>CONVERTIR</b></span><span>04<br/><b>FIDÉLISER</b></span></div>
+      </section>
+
+      <section id="film" className="networkFilm">
+        <div className="networkFilmHead">
+          <p>LE FILM · 58 SECONDES</p>
+          <h2>Neuf métiers. Une seule personne.<br/><em>Bikéo remet la roue droite.</em></h2>
+          <span>Le quotidien d'un magasin vélo indépendant, et ce que Bikéo prend en charge : site, réseaux sociaux, fidélité Wallet et PLV.</span>
+        </div>
+        <LandingFilm />
       </section>
 
       <section className="networkStatement">
