@@ -21,7 +21,8 @@ export async function POST(req: Request) {
   if (me) return NextResponse.json({ error: me.message }, { status: 500 });
   const mon = (m || []).find((x: any) => x.brand_id === brandId);
   if (!mon?.facebook_page_url) return NextResponse.json({ error: "URL Facebook manquante" }, { status: 400 });
-  const result = await runMonitor(s, brandId, mon.facebook_page_url, deadline);
+  const days = Number(b.days) > 0 ? Math.min(31, Number(b.days)) : 4;
+  const result = await runMonitor(s, brandId, mon.facebook_page_url, deadline, days);
   const status = result.ok ? 200 : result.noRecords ? 502 : 500;
   return NextResponse.json(result, { status });
 }

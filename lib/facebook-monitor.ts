@@ -145,10 +145,10 @@ export async function scrapeDataset(dataset: string, input: Record<string, unkno
   return { rows: parseRecords(raw), raw, snapshotId: null as string | null };
 }
 
-export async function scrape(url: string, start: string, end: string, deadline = Date.now() + 240000) {
+export async function scrape(url: string, start: string, end: string, deadline = Date.now() + 240000, numOfPosts = 20) {
   const { rows, raw, snapshotId } = await scrapeDataset(
     DATASET,
-    [{ url, num_of_posts: 20, start_date: start, end_date: end }],
+    [{ url, num_of_posts: numOfPosts, start_date: start, end_date: end }],
     deadline,
   );
   return {
@@ -175,10 +175,12 @@ export type MonitorResult = {
 
 // Vérifie la fenêtre glissante J-4 → J-1 d'une marque, importe les nouveaux posts en « pending »
 // et met à jour l'état du moniteur. Ne lève jamais : renvoie un résultat exploitable par les routes.
-export async function runMonitor(s: any, brandId: string, pageUrl: string, deadline: number): Promise<MonitorResult> {
+// days = longueur de la fenêtre vérifiée (4 jours par défaut, jusqu'à 31 pour un rattrapage).
+export async function runMonitor(s: any, brandId: string, pageUrl: string, deadline: number, days = 4): Promise<MonitorResult> {
+  const span = Math.min(31, Math.max(1, Math.round(days) || 4));
   const yesterday = addDays(new Date(), -1);
   const windowEnd = iso(yesterday);
-  const windowStart = addDays(yesterday, -3);
+  const windowStart = addDays(yesterday, -(span - 1));
   const windowStop = addDays(yesterday, 1);
   const checked = { start: fmt(windowStart), end: fmt(yesterday) };
   const fail = async (error: string, extra: Partial<MonitorResult> = {}, imported = 0): Promise<MonitorResult> => {
@@ -186,7 +188,7 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
     return { ok: false, error, checked, records: 0, imported, diagnostic: {}, ...extra };
   };
   try {
-    const scraped = await scrape(pageUrl, checked.start, checked.end, deadline);
+    const scraped = await scrape(pageUrl, checked.start, checked.end, deadline, Math.max(20, span * 3));
     const rows = scraped.rows;
     const posts = rows.filter((r: any) => r && !r.error && r.post_id);
     const errorRows = rows.filter((r: any) => r?.error);
@@ -215,6 +217,15 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
       if (media.length === 0 && caption) {
         const preview = await linkPreviewImage(caption);
         if (preview) media = [preview];
+      }
+      // Partage d'une vidéo d'une autre page : le dataset « page » ne donne pas de visuel,
+      // le dataset « post » renvoie souvent la miniature. Une seule tentative, à l'import.
+      if (media.length === 0 && sourceUrl && Date.now() + 100000 < deadline) {
+        try {
+          const one = await scrapeDataset(POST_DATASET, [{ url: sourceUrl }], Date.now() + 90000);
+          const r = one.rows.find((x: any) => x && !x.error);
+          if (r) media = mediaUrls(r);
+        } catch {}
       }
       if (!caption && media.length === 0) {
         empty++;
@@ -285,7 +296,9 @@ export async function refreshStoredMedia(existing: any[], brandId: string, deadl
     const folder = `social/${brandId}/${item.external_post_id || item.id}`;
     let media = before.length ? (await rehostImages(before, folder)).urls : [];
     const allHosted = media.length > 0 && media.length === before.length && media.every(isHosted);
-    if (!allHosted && before.some(isFacebookCdn) && item.source_url && Date.now() + 90000 < deadline) {
+    // Relecture du post : liens expirés, ou post sans visuel importé il y a moins de 3 jours.
+    const recentEmpty = before.length === 0 && Date.now() - new Date(item.created_at || 0).getTime() < 3 * 86400000;
+    if (!allHosted && (before.some(isFacebookCdn) || recentEmpty) && item.source_url && Date.now() + 90000 < deadline) {
       // Liens expirés : on relit le post pour obtenir des liens frais.
       try {
         const { rows } = await scrapeDataset(POST_DATASET, [{ url: item.source_url }], Math.min(deadline - 20000, Date.now() + 90000));
