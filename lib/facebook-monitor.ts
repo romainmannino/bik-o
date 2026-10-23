@@ -2,7 +2,7 @@
 // Utilisé par le cron quotidien et par le bouton « Vérifier » de l'admin.
 
 import { createAdminClient } from "@/lib/supabase/admin";
-import { rehostImages, linkPreviewImage, isHosted, isFacebookCdn } from "@/lib/social-media";
+import { rehostImages, rehostVideo, linkPreviewImage, isHosted, isFacebookCdn } from "@/lib/social-media";
 
 export const DATASET = "gd_lkaxegm826bjpoo9m5";
 export const POST_DATASET = "gd_lyclm1571iy3mv57zw"; // un post Facebook par URL
@@ -52,6 +52,46 @@ export function mediaUrls(row: any) {
     if (isImage(extra)) urls.push(extra);
   }
   return [...new Set(urls)];
+}
+
+// Type de contenu affiché dans l'admin : vidéo, carrousel, photo, lien partagé ou sans visuel.
+export type MediaKind = "video" | "carousel" | "photo" | "link" | "article" | "none";
+const isVideoFile = (x: unknown): x is string =>
+  typeof x === "string" && /^https:\/\//i.test(x) && /\.(mp4|mov|webm)(\?|$)/i.test(x);
+const VIDEO_PAGE = /facebook\.com\/(reel|watch|[^/?#]+\/videos)\//i;
+// Bright Data donne la durée en secondes ou en millisecondes selon les posts.
+const toSeconds = (x: unknown) => {
+  const n = Number(x);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return n > 900 ? Math.round(n / 1000) : Math.round(n);
+};
+
+export function mediaInfo(row: any, sourceUrl = "") {
+  const attachments = Array.isArray(row?.attachments) ? row.attachments : [];
+  let videoUrl: string | null = null;
+  let videoSeconds: number | null = null;
+  let hasVideo = VIDEO_PAGE.test(sourceUrl) || VIDEO_PAGE.test(String(row?.url || "")) || /reel|video/i.test(String(row?.post_type || ""));
+  for (const a of attachments) {
+    if (!a || typeof a !== "object") continue;
+    if (!(/video|reel/i.test(String(a.type || "")) || a.video_url)) continue;
+    hasVideo = true;
+    const v = [a.video_url, a.url, a.attachment_url].find(isVideoFile);
+    if (v && !videoUrl) {
+      videoUrl = v;
+      videoSeconds = toSeconds(a.video_length);
+    }
+  }
+  const extra = [row?.video_url, ...(Array.isArray(row?.videos) ? row.videos.map((x: any) => (typeof x === "string" ? x : x?.video_url || x?.url)) : [])];
+  for (const v of extra) {
+    if (!videoUrl && isVideoFile(v)) {
+      videoUrl = v;
+      hasVideo = true;
+    }
+  }
+  if (videoSeconds === null) videoSeconds = toSeconds(row?.video_length);
+  const images = mediaUrls(row);
+  const kind: MediaKind = hasVideo ? "video" : images.length > 1 ? "carousel" : images.length === 1 ? "photo" : "none";
+  return { kind, images, videoUrl, videoSeconds };
 }
 
 export function dateInWindow(row: any, from: Date, to: Date) {
@@ -193,7 +233,9 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
     const posts = rows.filter((r: any) => r && !r.error && r.post_id);
     const errorRows = rows.filter((r: any) => r?.error);
 
-    const { data: existing, error: listError } = await s.rpc("admin_list_brand_social_content");
+    // Les RPC v2 (type de média, vidéo) sont réservées au serveur : clé service si disponible.
+    const db = createAdminClient() || s;
+    const { data: existing, error: listError } = await db.rpc("admin_list_brand_social_content_v2");
     if (listError) throw new Error(listError.message);
     const knownIds = new Set<string>((existing || []).map((x: any) => String(x.external_post_id || "")).filter(Boolean));
     const knownUrls = new Set<string>((existing || []).map((x: any) => String(x.source_url || "")).filter(Boolean));
@@ -213,27 +255,43 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
         continue;
       }
       const caption = dedupe(String(row.content || ""));
-      let media = mediaUrls(row);
-      if (media.length === 0 && caption) {
-        const preview = await linkPreviewImage(caption);
-        if (preview) media = [preview];
-      }
-      // Partage d'une vidéo d'une autre page : le dataset « page » ne donne pas de visuel,
-      // le dataset « post » renvoie souvent la miniature. Une seule tentative, à l'import.
-      if (media.length === 0 && sourceUrl && Date.now() + 100000 < deadline) {
+      let info = mediaInfo(row, sourceUrl);
+      let media = info.images;
+      // Partage d'une vidéo d'une autre page, ou vidéo sans lien de lecture : le dataset « post »
+      // renvoie souvent la miniature et le fichier vidéo. Une seule tentative, à l'import.
+      if ((media.length === 0 || (info.kind === "video" && !info.videoUrl)) && sourceUrl && Date.now() + 100000 < deadline) {
         try {
           const one = await scrapeDataset(POST_DATASET, [{ url: sourceUrl }], Date.now() + 90000);
           const r = one.rows.find((x: any) => x && !x.error);
-          if (r) media = mediaUrls(r);
+          if (r) {
+            const more = mediaInfo(r, sourceUrl);
+            if (!media.length) media = more.images;
+            info = {
+              kind: info.kind === "video" || more.kind === "video" ? "video" : more.kind !== "none" ? more.kind : info.kind,
+              images: media,
+              videoUrl: info.videoUrl || more.videoUrl,
+              videoSeconds: info.videoSeconds ?? more.videoSeconds,
+            };
+          }
         } catch {}
       }
-      if (!caption && media.length === 0) {
+      let kind: MediaKind = info.kind;
+      if (media.length === 0 && caption) {
+        const preview = await linkPreviewImage(caption);
+        if (preview) {
+          media = [preview];
+          if (kind === "none") kind = "link";
+        }
+      }
+      if (!caption && media.length === 0 && !info.videoUrl) {
         empty++;
         continue;
       }
-      // Copie durable des images (les liens Facebook expirent sous ~6 jours).
-      media = (await rehostImages(media, `social/${brandId}/${postId}`)).urls;
-      const { error } = await s.rpc("admin_create_brand_social_content_pending", {
+      const folder = `social/${brandId}/${postId}`;
+      // Copie durable des images et de la vidéo (les liens Facebook expirent sous ~6 jours).
+      media = (await rehostImages(media, folder)).urls;
+      const videoUrl = info.videoUrl && Date.now() + 70000 < deadline ? await rehostVideo(info.videoUrl, folder) : null;
+      const { error } = await db.rpc("admin_create_brand_social_content_pending_v2", {
         p_brand_id: brandId,
         p_title: row.user_username_raw || row.page_name || "Actualité marque",
         p_caption: caption,
@@ -242,6 +300,9 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
         p_source_url: sourceUrl,
         p_external_post_id: postId,
         p_published_at: row.date_posted || null,
+        p_media_kind: kind,
+        p_video_url: videoUrl,
+        p_video_seconds: info.videoSeconds,
       });
       if (error) {
         createErrors.push(error.message);
@@ -276,51 +337,102 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
   }
 }
 
-// Contenus Facebook encore actifs (à valider ou disponibles) dont les visuels ne sont pas copiés
-// dans Supabase : on copie les images encore valides, sinon on relit le post chez Bright Data.
+// Contenus Facebook encore actifs (à valider ou disponibles) à compléter : images restées sur Facebook,
+// vidéo pas encore copiée, ou post sans visuel jamais relu. Les posts à relire le sont en un seul
+// appel Bright Data ; chaque post n'est relu qu'une fois (media_checked_at), sauf liens expirés.
+const normUrl = (u: unknown) => String(u || "").split(/[?#]/)[0].replace(/\/+$/, "").toLowerCase();
+const reelId = (u: unknown) => String(u || "").match(/\/(?:reel|videos)\/(\d+)/)?.[1] || "";
+function rowKeys(r: any) {
+  const keys = [normUrl(r?.url), normUrl(r?.input?.url), String(r?.post_id || ""), String(r?.shortcode || ""), reelId(r?.url), reelId(r?.input?.url)];
+  for (const a of Array.isArray(r?.attachments) ? r.attachments : []) keys.push(String(a?.id || ""));
+  return new Set(keys.filter(Boolean));
+}
+const itemKeys = (x: any) => [normUrl(x.source_url), String(x.external_post_id || ""), reelId(x.source_url)].filter(Boolean);
+
 export async function refreshStoredMedia(existing: any[], brandId: string, deadline: number) {
   const admin = createAdminClient();
   if (!admin) return { skipped: "clé service Supabase absente" };
+  const urlsOf = (x: any): string[] => (Array.isArray(x.media_urls) ? x.media_urls : []).filter((u: any) => typeof u === "string");
+  const cdnLeft = (x: any) => urlsOf(x).some((u) => !isHosted(u) && isFacebookCdn(u));
+  const neverChecked = (x: any) =>
+    !x.media_checked_at && (urlsOf(x).length === 0 || (x.media_kind === "video" && !(x.video_url && isHosted(x.video_url))));
   const todo = existing
     .filter((x) => x.brand_id === brandId && x.source_network === "facebook" && ["pending", "available"].includes(x.status))
-    .filter((x) => {
-      const media: string[] = Array.isArray(x.media_urls) ? x.media_urls : [];
-      return media.length === 0 || media.some((u) => typeof u === "string" && !isHosted(u) && isFacebookCdn(u));
-    })
-    .slice(0, 8);
-  let fixed = 0, rescraped = 0, unchanged = 0;
+    .filter((x) => cdnLeft(x) || neverChecked(x))
+    .slice(0, 10);
+
+  let fixed = 0, rescraped = 0, unchanged = 0, videos = 0;
   const errors: string[] = [];
+  const plans = [];
   for (const item of todo) {
-    if (Date.now() + 20000 > deadline) break;
-    const before: string[] = (Array.isArray(item.media_urls) ? item.media_urls : []).filter((u: any) => typeof u === "string");
+    const before = urlsOf(item);
     const folder = `social/${brandId}/${item.external_post_id || item.id}`;
-    let media = before.length ? (await rehostImages(before, folder)).urls : [];
+    const media = before.length ? (await rehostImages(before, folder)).urls : [];
     const allHosted = media.length > 0 && media.length === before.length && media.every(isHosted);
-    // Relecture du post : liens expirés, ou post sans visuel importé il y a moins de 3 jours.
-    const recentEmpty = before.length === 0 && Date.now() - new Date(item.created_at || 0).getTime() < 3 * 86400000;
-    if (!allHosted && (before.some(isFacebookCdn) || recentEmpty) && item.source_url && Date.now() + 90000 < deadline) {
-      // Liens expirés : on relit le post pour obtenir des liens frais.
-      try {
-        const { rows } = await scrapeDataset(POST_DATASET, [{ url: item.source_url }], Math.min(deadline - 20000, Date.now() + 90000));
-        const row = rows.find((r: any) => r && !r.error);
-        if (row) {
-          rescraped++;
-          const fresh = mediaUrls(row);
-          if (fresh.length) media = (await rehostImages(fresh, folder)).urls;
+    const canRead = /facebook\.com\//i.test(String(item.source_url || ""));
+    const rescrape = canRead && ((!allHosted && before.some(isFacebookCdn)) || neverChecked(item));
+    plans.push({ item, before, folder, media, allHosted, rescrape });
+  }
+
+  const toRead = plans.filter((p) => p.rescrape);
+  let rows: any[] = [];
+  let readOk = false;
+  if (toRead.length && Date.now() + 100000 < deadline) {
+    try {
+      const res = await scrapeDataset(POST_DATASET, toRead.map((p) => ({ url: p.item.source_url })), Math.min(deadline - 45000, Date.now() + 170000));
+      rows = res.rows.filter((r: any) => r && !r.error);
+      readOk = true;
+    } catch (e: any) {
+      errors.push(String(e?.message || e).slice(0, 200));
+    }
+  }
+  const indexed = rows.map((r) => ({ r, keys: rowKeys(r) }));
+
+  for (const p of plans) {
+    if (Date.now() + 15000 > deadline) break;
+    const { item, before, folder } = p;
+    let media = p.media;
+    let kind: MediaKind = item.media_kind || (media.length > 1 ? "carousel" : media.length ? "photo" : "none");
+    let videoUrl: string | null = item.video_url || null;
+    let videoSeconds: number | null = item.video_seconds ?? null;
+    const row = p.rescrape ? indexed.find((x) => itemKeys(item).some((k) => x.keys.has(k)))?.r : undefined;
+    if (row) {
+      rescraped++;
+      const info = mediaInfo(row, item.source_url);
+      if (!p.allHosted && info.images.length) media = (await rehostImages(info.images, folder)).urls;
+      if (info.kind === "video") kind = "video";
+      else if (kind === "none" && info.kind !== "none") kind = info.kind;
+      videoSeconds = info.videoSeconds ?? videoSeconds;
+      if (info.videoUrl && !(videoUrl && isHosted(videoUrl)) && Date.now() + 70000 < deadline) {
+        const hosted = await rehostVideo(info.videoUrl, folder);
+        if (hosted) {
+          videoUrl = hosted;
+          videos++;
         }
-      } catch {}
+      }
     }
     if (media.length === 0 && item.original_caption) {
       const preview = await linkPreviewImage(String(item.original_caption));
-      if (preview) media = (await rehostImages([preview], folder)).urls;
+      if (preview) {
+        media = (await rehostImages([preview], folder)).urls;
+        if (kind === "none" && media.length) kind = "link";
+      }
     }
-    if (JSON.stringify(media) === JSON.stringify(before)) {
+    const patch: Record<string, unknown> = { media_urls: media, media_kind: kind, video_url: videoUrl, video_seconds: videoSeconds };
+    if (p.rescrape && readOk) patch.media_checked_at = new Date().toISOString();
+    const same =
+      JSON.stringify(media) === JSON.stringify(before) &&
+      kind === item.media_kind &&
+      videoUrl === (item.video_url || null) &&
+      videoSeconds === (item.video_seconds ?? null) &&
+      !patch.media_checked_at;
+    if (same) {
       unchanged++;
       continue;
     }
-    const { error } = await admin.from("brand_social_contents").update({ media_urls: media }).eq("id", item.id);
+    const { error } = await admin.from("brand_social_contents").update(patch).eq("id", item.id);
     if (error) errors.push(error.message);
     else fixed++;
   }
-  return { candidates: todo.length, fixed, rescraped, unchanged, errors };
+  return { candidates: todo.length, read: toRead.length, rescraped, fixed, videos, unchanged, errors };
 }

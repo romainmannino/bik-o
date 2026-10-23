@@ -55,6 +55,30 @@ export async function rehostImages(urls: string[], folder: string) {
   return { urls: out, copied, failed };
 }
 
+// Copie une vidéo (mp4) dans Supabase Storage pour la lire dans l'admin et la réutiliser en magasin.
+// Renvoie null si la vidéo est indisponible, trop lourde ou si la clé service manque.
+const MAX_VIDEO_BYTES = 90 * 1024 * 1024;
+export async function rehostVideo(url: string, folder: string): Promise<string | null> {
+  if (!url) return null;
+  if (isHosted(url)) return url;
+  const admin = createAdminClient();
+  if (!admin) return null;
+  try {
+    const r = await fetch(url, { headers: { "user-agent": UA }, signal: AbortSignal.timeout(60000), cache: "no-store" });
+    const type = (r.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+    if (!r.ok || !/^video\/mp4$|^application\/octet-stream$/.test(type)) return null;
+    if (Number(r.headers.get("content-length") || 0) > MAX_VIDEO_BYTES) return null;
+    const body = new Uint8Array(await r.arrayBuffer());
+    if (body.byteLength === 0 || body.byteLength > MAX_VIDEO_BYTES) return null;
+    const path = `${folder}/video.mp4`;
+    const { error } = await admin.storage.from(BUCKET).upload(path, body, { contentType: "video/mp4", upsert: true });
+    if (error) return null;
+    return admin.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+  } catch {
+    return null;
+  }
+}
+
 // Image d'aperçu (og:image) du premier lien externe cité dans le texte d'un post.
 export async function linkPreviewImage(text: string): Promise<string | null> {
   const links = (text.match(/https?:\/\/[^\s<>"')]+/g) || [])
