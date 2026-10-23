@@ -224,7 +224,7 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
   const windowStop = addDays(yesterday, 1);
   const checked = { start: fmt(windowStart), end: fmt(yesterday) };
   const fail = async (error: string, extra: Partial<MonitorResult> = {}, imported = 0): Promise<MonitorResult> => {
-    await s.rpc("admin_mark_brand_social_monitor", { p_brand_id: brandId, p_error: error, p_imported: imported });
+    await (createAdminClient()||s).rpc("admin_mark_brand_social_monitor", { p_brand_id: brandId, p_error: error, p_imported: imported });
     return { ok: false, error, checked, records: 0, imported, diagnostic: {}, ...extra };
   };
   try {
@@ -325,7 +325,7 @@ export async function runMonitor(s: any, brandId: string, pageUrl: string, deadl
     if (createErrors.length) {
       return fail("Import incomplet : " + createErrors.join(" | "), { records: rows.length, diagnostic }, imported);
     }
-    await s.rpc("admin_mark_brand_social_monitor_window", {
+    await (createAdminClient()||s).rpc("admin_mark_brand_social_monitor_window", {
       p_brand_id: brandId,
       p_error: null,
       p_imported: imported,

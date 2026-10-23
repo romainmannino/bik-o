@@ -1,3 +1,4 @@
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isAdminSession } from "@/lib/admin-session";
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
   } catch {}
   const brandId = String(b.brandId || "");
   if (!brandId) return NextResponse.json({ error: "Marque manquante" }, { status: 400 });
-  const { data: m, error: me } = await s.rpc("admin_list_brand_social_monitors");
+  const { data: m, error: me } = await (createAdminClient()||s).rpc("admin_list_brand_social_monitors");
   if (me) return NextResponse.json({ error: me.message }, { status: 500 });
   const mon = (m || []).find((x: any) => x.brand_id === brandId);
   if (!mon?.facebook_page_url) return NextResponse.json({ error: "URL Facebook manquante" }, { status: 400 });

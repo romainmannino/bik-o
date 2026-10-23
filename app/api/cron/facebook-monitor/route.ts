@@ -1,3 +1,4 @@
+import { createAdminClient } from "@/lib/supabase/admin";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { iso, addDays, runMonitor } from "@/lib/facebook-monitor";
@@ -13,7 +14,7 @@ export async function GET(req: Request) {
   // Garde ~20 s de marge sous maxDuration pour enregistrer les résultats.
   const deadline = startedAt + 280000;
   const s = await createClient();
-  const { data: monitors, error } = await s.rpc("cron_list_enabled_brand_social_monitors");
+  const { data: monitors, error } = await (createAdminClient()||s).rpc("cron_list_enabled_brand_social_monitors");
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   // Les marques sont collectées en parallèle : chacune peut attendre son snapshot Bright Data.
   const summary = await Promise.all(
